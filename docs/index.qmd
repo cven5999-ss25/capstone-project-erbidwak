@@ -1,0 +1,180 @@
+---
+title: "Hybrid Solar power plan data analysis"
+author:
+  - name: "Eric Bidong Wakunga"
+    orcid: "0009-0001-3770-5405"
+    email: "eric.bidongsr@colorado.edu"
+    affiliation:
+      - name: "University of Colorado Boulder"
+        department: "Department of Civil, Environmental and Architectural Engineering"
+        city: "Boulder"
+        state: "CO"
+        country: "USA"
+date: today
+format: html
+editor: visual
+---
+
+# Introduction
+
+This is a hybrid solar power generation data. We will analyze the production patterns and compare with the consumption. We will be investigating what period of the year the production is here and what contribute to that? How the demand be growing for that plant? What was the contribution of diesel generation to the total generation over time?
+
+These are kind of questions we would like to answer through the analysis.
+
+# Methodes
+
+## **Loading libraries**
+
+```{r}
+#import libraries
+
+library(tidyverse)
+library(here)
+library(dplyr)
+```
+
+## Reading data
+
+```{r}
+energy_production <- read_csv(here("data/raw/capston_dataset.csv"))
+```
+
+## Data Exploratory Approach
+
+### Data summary
+
+```{r}
+dim(energy_production)
+```
+
+```{r}
+head(energy_production)
+```
+
+Some data are coded as chr instead of double. This is due to the fact data came with "%" sign, hence R is reading it as charactor. Let's remove this and convert it into numeric values.
+
+```{r}
+energy_production <- energy_production |>
+  mutate(
+    across(
+      where(~ any(grepl("%", .))),
+      ~ as.numeric(gsub("%", "", .))))
+
+glimpse(energy_production)
+```
+
+Now it looks good. There still one more numerical column that is show as chr instead of double. This is due to the fact that the data logger inserted some chains of character to state missing data. Let's convert it to numeric using "mutate" function so that all the characters become double.
+
+```{r}
+energy_production <- energy_production |> 
+  mutate(`Actual Irradiation (W/2)` = as.numeric(`Actual Irradiation (W/2)`))
+
+glimpse(energy_production)
+```
+
+Let convert date to a normal format that lubridate library can understand.
+
+```{r}
+library(lubridate)
+energy_production <- energy_production |>
+  mutate(`Date` = mdy(`Date`))
+```
+
+```{r}
+monthly_energy_production <- energy_production |>
+  mutate(month = floor_date(`Date`,"month")) |>
+  group_by(`Site Region`, month) |>
+  summarize(total_generation = sum(`Actual Energy Exported to DN (KWh)`, na.rm = TRUE))
+```
+
+### Data visualization
+
+```{r}
+library(ggplot2)
+
+site1_plot <- monthly_energy_production |>
+  filter(`Site Region` == "S1") |>
+  ggplot(aes(x = month, y = total_generation)) +
+  geom_col(fill = "skyblue") +
+  geom_line(color = "darkblue", size = 1) +
+  labs(
+    title = "Monthly Solar Generation for Site 1", 
+    x = "Month",
+    y = "Generation (kWh)"
+  ) +
+  scale_x_date(date_labels = "%Y-%m", date_breaks = "6 months") +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(angle=45, hjust = 1), 
+  )
+
+library(ggplot2)
+
+site2_plot <- monthly_energy_production |>
+  filter(`Site Region` == "S2") |>
+  ggplot(aes(x = month, y = total_generation)) +
+  geom_col(fill = "skyblue") +
+  geom_line(color = "darkblue", size = 1) +
+  labs(
+    title = "Monthly Solar Generation for Site 2", 
+    x = "Month",
+    y = "Generation (kWh)"
+  ) +
+  scale_x_date(date_labels = "%Y-%m", date_breaks = "6 months") +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(angle=45, hjust = 1), 
+  )
+
+library(ggplot2)
+
+site3_plot <- monthly_energy_production |>
+  filter(`Site Region` == "S3") |>
+  ggplot(aes(x = month, y = total_generation)) +
+  geom_col(fill = "skyblue") +
+  geom_line(color = "darkblue", size = 1) +
+  labs(
+    title = "Monthly Solar Generation for Site 3", 
+    x = "Month",
+    y = "Generation (kWh)"
+  ) +
+  scale_x_date(date_labels = "%Y-%m", date_breaks = "6 months") +
+  theme_minimal() +
+  theme(
+    axis.text = element_text(angle=45, hjust = 1), 
+  )
+
+site1_plot
+site2_plot
+site3_plot
+```
+
+## Initial data Tidying
+
+### Renaming columns
+
+Initial tidying happens previously, when we change the data format, character data type to double and removing "%" from the percent data values. Here we will rename the column by replacing spaces and parathesis by underscore, lowering character and deleting special characters. To achieve this, we will use the stringr library
+
+```{r}
+energy_production <- energy_production |>
+  rename_with(~ str_to_lower(.)) |>
+  rename_with(~ str_replace_all(., "[\\s\\(\\)]+", "_")) |>
+  rename_with(~ str_replace_all(., "[^a-z0-9_]", "")) |>
+  rename_with(~ str_replace_all(., "_+", "_")) |>
+  rename_with(~ str_replace_all(., "^_|_$", "")) |>
+  rename_with(~ ifelse(str_ends(., "in"), paste0(.,"_percent"), .))
+```
+
+### Saving data
+
+```{r}
+write_csv(energy_production, here("data/processed/energy_production.csv"))
+```
+
+# Results
+
+# Conclusions
+
+## Summary of Findings
+
+### Questions and Next Steps

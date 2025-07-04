@@ -10,14 +10,14 @@
 
 - First name: Eric
 - Surname: Bidong
-- ORCID iD: 
+- ORCID iD: 0009-0001-3770-5405
 - Email:erbid49@gmail.com
 
 **Author B**
 
-- First name:
-- Surname:
-- ORCID iD
+- First name: 
+- Surname: 
+- ORCID iD : 
 - Email:
 
 etc.
@@ -54,7 +54,7 @@ Recommended: This work is licensed under the Creative Commons Attribution 4.0 In
 
 4.  Standards and calibration information, if appropriate: -
 
-5.  Environmental/experimental conditions: 
+5.  Environmental/experimental conditions: git config --global user.email "erbid49@gmail.com"
 
 6.  Describe any quality-assurance procedures performed on the data: Data was directly logged from software which handles data validation
 
