@@ -7,9 +7,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Eric Bidong Wakunga">
-<meta name="dcterms.date" content="2025-07-04">
+<meta name="dcterms.date" content="2025-07-10">
 
-<title>Hybrid Solar power plan data analysis</title>
+<title>Electricity generation by countries</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -83,7 +83,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Hybrid Solar power plan data analysis</h1>
+<h1 class="title">Electricity generation by countries</h1>
 </div>
 
 
@@ -107,7 +107,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 4, 2025</p>
+      <p class="date">July 10, 2025</p>
     </div>
   </div>
   
@@ -121,51 +121,24 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>This is a hybrid solar power generation data. We will analyze the production patterns and compare with the consumption. We will be investigating what period of the year the production is here and what contribute to that? How the demand be growing for that plant? What was the contribution of diesel generation to the total generation over time?</p>
-<p>These are kind of questions we would like to answer through the analysis.</p>
+<p>This is the global electricity generation dataset by countries over 10 to 30 years. We will use this for the capstone project to look the total production the last 10 years from the recent year in the dataset and the average production growth rate by countries.</p>
 </section>
-<section id="methodes" class="level1">
-<h1>Methodes</h1>
+<section id="methods" class="level1">
+<h1>Methods</h1>
 <section id="loading-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="loading-libraries"><strong>Loading libraries</strong></h2>
 <div class="cell">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co">#import libraries</span></span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-✔ dplyr     1.1.4     ✔ readr     2.1.5
-✔ forcats   1.0.0     ✔ stringr   1.5.1
-✔ ggplot2   3.5.2     ✔ tibble    3.2.1
-✔ lubridate 1.9.4     ✔ tidyr     1.3.1
-✔ purrr     1.0.4     
-── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-✖ dplyr::filter() masks stats::filter()
-✖ dplyr::lag()    masks stats::lag()
-ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>here() starts at /cloud/project</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-data" class="level2">
 <h2 class="anchored" data-anchor-id="reading-data">Reading data</h2>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>energy_production <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data/raw/capston_dataset.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Rows: 5300 Columns: 24
-── Column specification ────────────────────────────────────────────────────────
-Delimiter: ","
-chr (9): Date, Site Region, Commissioning date (YYYY-MM), Planned Uptime (in...
-dbl (7): Year, Month, Planned Fuel Consumption (Liters), Actual Energy from ...
-num (8): Planned Energy from PV (in kWh), Planned Energy from Hydro (in kWh)...
-
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-</div>
+<div class="sourceCode cell-code" id="cb2"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>energy_generation_by_countries <span class="ot">&lt;-</span> <span class="fu">read_csv</span>(<span class="fu">here</span>(<span class="st">"data/raw/capston_dataset.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="data-exploratory-approach" class="level2">
@@ -173,241 +146,180 @@ num (8): Planned Energy from PV (in kWh), Planned Energy from Hydro (in kWh)...
 <section id="data-summary" class="level3">
 <h3 class="anchored" data-anchor-id="data-summary">Data summary</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(energy_production)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">dim</span>(energy_generation_by_countries)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] 5300   24</code></pre>
+<pre><code>[1] 7635    4</code></pre>
 </div>
 </div>
+<p>This dataset has 7653 rows and 4 columns.</p>
+<p>Let’s visualize the first five rows to inspect the data.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(energy_production)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(energy_generation_by_countries)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6 × 24
-  Date    Year Month `Site Region` Commissioning date (…¹ Planned Uptime (in %…²
-  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;chr&gt;         &lt;chr&gt;                  &lt;chr&gt;                 
-1 02/04…  2020     2 S1            Feb-2020               100.00%               
-2 02/05…  2020     2 S1            Feb-2020               100.00%               
-3 02/06…  2020     2 S1            Feb-2020               100.00%               
-4 02/07…  2020     2 S1            Feb-2020               100.00%               
-5 02/08…  2020     2 S1            Feb-2020               100.00%               
-6 02/09…  2020     2 S1            Feb-2020               100.00%               
-# ℹ abbreviated names: ¹​`Commissioning date (YYYY-MM)`,
-#   ²​`Planned Uptime (in %)`
-# ℹ 18 more variables: `Planned Energy from PV (in kWh)` &lt;dbl&gt;,
-#   `Planned Energy from Hydro (in kWh)` &lt;dbl&gt;,
-#   `Planned Energy from DG (in kWh)` &lt;dbl&gt;,
-#   `Planned Total Energy produced (in kWh)` &lt;dbl&gt;,
-#   `Planned Fuel Consumption (Liters)` &lt;dbl&gt;, …</code></pre>
+<pre><code># A tibble: 6 × 4
+  Entity        Code   Year `Electricity generation - TWh`
+  &lt;chr&gt;         &lt;chr&gt; &lt;dbl&gt;                          &lt;dbl&gt;
+1 ASEAN (Ember) &lt;NA&gt;   2000                           379.
+2 ASEAN (Ember) &lt;NA&gt;   2001                           405.
+3 ASEAN (Ember) &lt;NA&gt;   2002                           433.
+4 ASEAN (Ember) &lt;NA&gt;   2003                           458.
+5 ASEAN (Ember) &lt;NA&gt;   2004                           497.
+6 ASEAN (Ember) &lt;NA&gt;   2005                           523.</code></pre>
 </div>
 </div>
-<p>Some data are coded as chr instead of double. This is due to the fact data came with “%” sign, hence R is reading it as charactor. Let’s remove this and convert it into numeric values.</p>
+<p>The data looks good. There are some countries that are missing Code, but this is not important since we have the names of these countries.</p>
+<p>The data types are also correct.</p>
+<p>Let’s group data by country and summarize the statistics for exploration.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>energy_production <span class="ot">&lt;-</span> energy_production <span class="sc">|&gt;</span></span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    <span class="fu">across</span>(</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>      <span class="fu">where</span>(<span class="sc">~</span> <span class="fu">any</span>(<span class="fu">grepl</span>(<span class="st">"%"</span>, .))),</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>      <span class="sc">~</span> <span class="fu">as.numeric</span>(<span class="fu">gsub</span>(<span class="st">"%"</span>, <span class="st">""</span>, .))))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: There were 2 warnings in `mutate()`.
-The first warning was:
-ℹ In argument: `across(...)`.
-Caused by warning:
-! NAs introduced by coercion
-ℹ Run `dplyr::last_dplyr_warnings()` to see the 1 remaining warning.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(energy_production)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a>energy_summary <span class="ot">&lt;-</span> energy_generation_by_countries <span class="sc">|&gt;</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Entity) <span class="sc">|&gt;</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_generation_TWh =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Electricity generation - TWh</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_years =</span> <span class="fu">n</span>()</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(total_generation_TWh))</span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a>energy_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 5,300
-Columns: 24
-$ Date                                     &lt;chr&gt; "02/04/2020", "02/05/2020", "…
-$ Year                                     &lt;dbl&gt; 2020, 2020, 2020, 2020, 2020,…
-$ Month                                    &lt;dbl&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,…
-$ `Site Region`                            &lt;chr&gt; "S1", "S1", "S1", "S1", "S1",…
-$ `Commissioning date (YYYY-MM)`           &lt;chr&gt; "Feb-2020", "Feb-2020", "Feb-…
-$ `Planned Uptime (in %)`                  &lt;dbl&gt; 100, 100, 100, 100, 100, 100,…
-$ `Planned Energy from PV (in kWh)`        &lt;dbl&gt; 4095, 4095, 4095, 4095, 4095,…
-$ `Planned Energy from Hydro (in kWh)`     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-$ `Planned Energy from DG (in kWh)`        &lt;dbl&gt; 1696, 1696, 1696, 1696, 1696,…
-$ `Planned Total Energy produced (in kWh)` &lt;dbl&gt; 5791, 5791, 5791, 5791, 5791,…
-$ `Planned Fuel Consumption (Liters)`      &lt;dbl&gt; 475, 475, 475, 475, 475, 475,…
-$ `Expected Energy from PV (in kWh)`       &lt;dbl&gt; 4315, 2916, 4919, 7743, 7849,…
-$ `Actual Irradiation (W/2)`               &lt;chr&gt; "142.07", "95.99", "161.93", …
-$ `Actual Uptime (in %)`                   &lt;dbl&gt; 100, 100, 100, 100, 100, 100,…
-$ `Actual Energy from PV (kWh)`            &lt;dbl&gt; 119, 122, 202, 193, 217, 196,…
-$ `Actual Energy from Hydro (kWh)`         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-$ `Actual Energy from DG (kWh)`            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 41, 0, 0, 0…
-$ `Actual Total Energy produced (in kWh)`  &lt;dbl&gt; 119, 122, 202, 193, 217, 196,…
-$ `Actual Fuel Consumption (Liters)`       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-$ `Actual Energy Exported to DN (KWh)`     &lt;dbl&gt; 30, 40, 1040, 940, 1220, 1160…
-$ `Actual REF (%)`                         &lt;dbl&gt; 100, 100, 100, 100, 100, 100,…
-$ `Actual UR (%)`                          &lt;dbl&gt; 1, 1, 19, 18, 23, 22, 21, 23,…
-$ `Actual Distribution losses (%)`         &lt;dbl&gt; -100, -100, -100, -100, -100,…
-$ `Actual Energy Consumption (kWh)`        &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
+<pre><code># A tibble: 252 × 3
+   Entity                        total_generation_TWh n_years
+   &lt;chr&gt;                                        &lt;dbl&gt;   &lt;int&gt;
+ 1 World                                      748571.      40
+ 2 G20 (Ember)                                473611.      25
+ 3 High-income countries                      412471.      39
+ 4 OECD (EI)                                  382262.      39
+ 5 Non-OECD (EI)                              342776.      39
+ 6 Asia                                       295142.      39
+ 7 OECD (Ember)                               264653.      25
+ 8 Asia Pacific (EI)                          262643.      39
+ 9 Upper-middle-income countries              235229.      39
+10 Asia (Ember)                               234806.      25
+# ℹ 242 more rows</code></pre>
 </div>
 </div>
-<p>Now it looks good. There still one more numerical column that is show as chr instead of double. This is due to the fact that the data logger inserted some chains of character to state missing data. Let’s convert it to numeric using “mutate” function so that all the characters become double.</p>
+<p>As you can see, there are aggregated data by region (OECD, High-income countries, etc) that are included in this dataset. In the next section, we will remove those in order to stick with only countries.</p>
+<p>Let’s now see the electricity generation growth rate by countries</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a>energy_production <span class="ot">&lt;-</span> energy_production <span class="sc">|&gt;</span> </span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Actual Irradiation (W/2)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">as.numeric</span>(<span class="st">`</span><span class="at">Actual Irradiation (W/2)</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: There was 1 warning in `mutate()`.
-ℹ In argument: `Actual Irradiation (W/2) = as.numeric(`Actual Irradiation
-  (W/2)`)`.
-Caused by warning:
-! NAs introduced by coercion</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(energy_production)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>growth_rates <span class="ot">&lt;-</span> energy_generation_by_countries <span class="sc">|&gt;</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Entity, Year) <span class="sc">|&gt;</span></span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Entity) <span class="sc">|&gt;</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">prev_year_generation =</span> <span class="fu">lag</span>(<span class="st">`</span><span class="at">Electricity generation - TWh</span><span class="st">`</span>),</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">annual_growth_rate =</span> (<span class="st">`</span><span class="at">Electricity generation - TWh</span><span class="st">`</span> <span class="sc">-</span> prev_year_generation) <span class="sc">/</span> prev_year_generation</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_generation_TWh =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Electricity generation - TWh</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_annual_growth =</span> <span class="fu">mean</span>(annual_growth_rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb9-11"><a href="#cb9-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_year =</span> <span class="fu">min</span>(Year),</span>
+<span id="cb9-12"><a href="#cb9-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_year =</span> <span class="fu">max</span>(Year),</span>
+<span id="cb9-13"><a href="#cb9-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_years =</span> <span class="fu">n</span>() <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb9-14"><a href="#cb9-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb9-15"><a href="#cb9-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_annual_growth))</span>
+<span id="cb9-16"><a href="#cb9-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb9-17"><a href="#cb9-17" aria-hidden="true" tabindex="-1"></a>growth_rates</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Rows: 5,300
-Columns: 24
-$ Date                                     &lt;chr&gt; "02/04/2020", "02/05/2020", "…
-$ Year                                     &lt;dbl&gt; 2020, 2020, 2020, 2020, 2020,…
-$ Month                                    &lt;dbl&gt; 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,…
-$ `Site Region`                            &lt;chr&gt; "S1", "S1", "S1", "S1", "S1",…
-$ `Commissioning date (YYYY-MM)`           &lt;chr&gt; "Feb-2020", "Feb-2020", "Feb-…
-$ `Planned Uptime (in %)`                  &lt;dbl&gt; 100, 100, 100, 100, 100, 100,…
-$ `Planned Energy from PV (in kWh)`        &lt;dbl&gt; 4095, 4095, 4095, 4095, 4095,…
-$ `Planned Energy from Hydro (in kWh)`     &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-$ `Planned Energy from DG (in kWh)`        &lt;dbl&gt; 1696, 1696, 1696, 1696, 1696,…
-$ `Planned Total Energy produced (in kWh)` &lt;dbl&gt; 5791, 5791, 5791, 5791, 5791,…
-$ `Planned Fuel Consumption (Liters)`      &lt;dbl&gt; 475, 475, 475, 475, 475, 475,…
-$ `Expected Energy from PV (in kWh)`       &lt;dbl&gt; 4315, 2916, 4919, 7743, 7849,…
-$ `Actual Irradiation (W/2)`               &lt;dbl&gt; 142.07, 95.99, 161.93, 254.90…
-$ `Actual Uptime (in %)`                   &lt;dbl&gt; 100, 100, 100, 100, 100, 100,…
-$ `Actual Energy from PV (kWh)`            &lt;dbl&gt; 119, 122, 202, 193, 217, 196,…
-$ `Actual Energy from Hydro (kWh)`         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-$ `Actual Energy from DG (kWh)`            &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 41, 0, 0, 0…
-$ `Actual Total Energy produced (in kWh)`  &lt;dbl&gt; 119, 122, 202, 193, 217, 196,…
-$ `Actual Fuel Consumption (Liters)`       &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,…
-$ `Actual Energy Exported to DN (KWh)`     &lt;dbl&gt; 30, 40, 1040, 940, 1220, 1160…
-$ `Actual REF (%)`                         &lt;dbl&gt; 100, 100, 100, 100, 100, 100,…
-$ `Actual UR (%)`                          &lt;dbl&gt; 1, 1, 19, 18, 23, 22, 21, 23,…
-$ `Actual Distribution losses (%)`         &lt;dbl&gt; -100, -100, -100, -100, -100,…
-$ `Actual Energy Consumption (kWh)`        &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, N…</code></pre>
+<pre><code># A tibble: 252 × 6
+   Entity       total_generation_TWh avg_annual_growth min_year max_year n_years
+   &lt;chr&gt;                       &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+ 1 Palestine                   11.1              0.279     2000     2022      22
+ 2 Benin                        7.68             0.245     2000     2023      23
+ 3 Cambodia                   111.               0.201     2000     2024      24
+ 4 Equatorial …                16.8              0.178     2000     2023      23
+ 5 Laos                       426.               0.156     2000     2023      23
+ 6 Congo                       45.0              0.147     2000     2023      23
+ 7 East Timor                   5.84             0.135     2003     2023      20
+ 8 Angola                     193.               0.119     2000     2023      23
+ 9 Ethiopia                   197.               0.113     2000     2023      23
+10 Vietnam                   3593.               0.112     1985     2024      39
+# ℹ 242 more rows</code></pre>
 </div>
 </div>
-<p>Let convert date to a normal format that lubridate library can understand.</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(lubridate)</span>
-<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>energy_production <span class="ot">&lt;-</span> energy_production <span class="sc">|&gt;</span></span>
-<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="st">`</span><span class="at">Date</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mdy</span>(<span class="st">`</span><span class="at">Date</span><span class="st">`</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a>monthly_energy_production <span class="ot">&lt;-</span> energy_production <span class="sc">|&gt;</span></span>
-<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">month =</span> <span class="fu">floor_date</span>(<span class="st">`</span><span class="at">Date</span><span class="st">`</span>,<span class="st">"month"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(<span class="st">`</span><span class="at">Site Region</span><span class="st">`</span>, month) <span class="sc">|&gt;</span></span>
-<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarize</span>(<span class="at">total_generation =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Actual Energy Exported to DN (KWh)</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>`summarise()` has grouped output by 'Site Region'. You can override using the
-`.groups` argument.</code></pre>
-</div>
-</div>
-</section>
-<section id="data-visualization" class="level3">
-<h3 class="anchored" data-anchor-id="data-visualization">Data visualization</h3>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb23-2"><a href="#cb23-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb23-3"><a href="#cb23-3" aria-hidden="true" tabindex="-1"></a>site1_plot <span class="ot">&lt;-</span> monthly_energy_production <span class="sc">|&gt;</span></span>
-<span id="cb23-4"><a href="#cb23-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Site Region</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"S1"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb23-5"><a href="#cb23-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> total_generation)) <span class="sc">+</span></span>
-<span id="cb23-6"><a href="#cb23-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>) <span class="sc">+</span></span>
-<span id="cb23-7"><a href="#cb23-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"darkblue"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb23-8"><a href="#cb23-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb23-9"><a href="#cb23-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Monthly Solar Generation for Site 1"</span>, </span>
-<span id="cb23-10"><a href="#cb23-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Month"</span>,</span>
-<span id="cb23-11"><a href="#cb23-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Generation (kWh)"</span></span>
-<span id="cb23-12"><a href="#cb23-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb23-13"><a href="#cb23-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_labels =</span> <span class="st">"%Y-%m"</span>, <span class="at">date_breaks =</span> <span class="st">"6 months"</span>) <span class="sc">+</span></span>
-<span id="cb23-14"><a href="#cb23-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb23-15"><a href="#cb23-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb23-16"><a href="#cb23-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>), </span>
-<span id="cb23-17"><a href="#cb23-17" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>Warning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.
-ℹ Please use `linewidth` instead.</code></pre>
-</div>
-<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb25-2"><a href="#cb25-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-3"><a href="#cb25-3" aria-hidden="true" tabindex="-1"></a>site2_plot <span class="ot">&lt;-</span> monthly_energy_production <span class="sc">|&gt;</span></span>
-<span id="cb25-4"><a href="#cb25-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Site Region</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"S2"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-5"><a href="#cb25-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> total_generation)) <span class="sc">+</span></span>
-<span id="cb25-6"><a href="#cb25-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>) <span class="sc">+</span></span>
-<span id="cb25-7"><a href="#cb25-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"darkblue"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb25-8"><a href="#cb25-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb25-9"><a href="#cb25-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Monthly Solar Generation for Site 2"</span>, </span>
-<span id="cb25-10"><a href="#cb25-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Month"</span>,</span>
-<span id="cb25-11"><a href="#cb25-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Generation (kWh)"</span></span>
-<span id="cb25-12"><a href="#cb25-12" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb25-13"><a href="#cb25-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_labels =</span> <span class="st">"%Y-%m"</span>, <span class="at">date_breaks =</span> <span class="st">"6 months"</span>) <span class="sc">+</span></span>
-<span id="cb25-14"><a href="#cb25-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb25-15"><a href="#cb25-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb25-16"><a href="#cb25-16" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>), </span>
-<span id="cb25-17"><a href="#cb25-17" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb25-18"><a href="#cb25-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-19"><a href="#cb25-19" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
-<span id="cb25-20"><a href="#cb25-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-21"><a href="#cb25-21" aria-hidden="true" tabindex="-1"></a>site3_plot <span class="ot">&lt;-</span> monthly_energy_production <span class="sc">|&gt;</span></span>
-<span id="cb25-22"><a href="#cb25-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="st">`</span><span class="at">Site Region</span><span class="st">`</span> <span class="sc">==</span> <span class="st">"S3"</span>) <span class="sc">|&gt;</span></span>
-<span id="cb25-23"><a href="#cb25-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> month, <span class="at">y =</span> total_generation)) <span class="sc">+</span></span>
-<span id="cb25-24"><a href="#cb25-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">fill =</span> <span class="st">"skyblue"</span>) <span class="sc">+</span></span>
-<span id="cb25-25"><a href="#cb25-25" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">color =</span> <span class="st">"darkblue"</span>, <span class="at">size =</span> <span class="dv">1</span>) <span class="sc">+</span></span>
-<span id="cb25-26"><a href="#cb25-26" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
-<span id="cb25-27"><a href="#cb25-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Monthly Solar Generation for Site 3"</span>, </span>
-<span id="cb25-28"><a href="#cb25-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Month"</span>,</span>
-<span id="cb25-29"><a href="#cb25-29" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Generation (kWh)"</span></span>
-<span id="cb25-30"><a href="#cb25-30" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
-<span id="cb25-31"><a href="#cb25-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_date</span>(<span class="at">date_labels =</span> <span class="st">"%Y-%m"</span>, <span class="at">date_breaks =</span> <span class="st">"6 months"</span>) <span class="sc">+</span></span>
-<span id="cb25-32"><a href="#cb25-32" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
-<span id="cb25-33"><a href="#cb25-33" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(</span>
-<span id="cb25-34"><a href="#cb25-34" aria-hidden="true" tabindex="-1"></a>    <span class="at">axis.text =</span> <span class="fu">element_text</span>(<span class="at">angle=</span><span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>), </span>
-<span id="cb25-35"><a href="#cb25-35" aria-hidden="true" tabindex="-1"></a>  )</span>
-<span id="cb25-36"><a href="#cb25-36" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb25-37"><a href="#cb25-37" aria-hidden="true" tabindex="-1"></a>site1_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb26"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb26-1"><a href="#cb26-1" aria-hidden="true" tabindex="-1"></a>site2_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-9-2.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>site3_plot</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output-display">
-<div>
-<figure class="figure">
-<p><img src="index_files/figure-html/unnamed-chunk-9-3.png" class="img-fluid figure-img" width="672"></p>
-</figure>
-</div>
-</div>
-</div>
+<p>Energy generation growth rate is high in developing countries. This shows that much effort is put recently to increase the generation capacity. We could interestingly compare such data with GDP data or any other wealth metric to understand better what is going on in each country.</p>
 </section>
 </section>
 <section id="initial-data-tidying" class="level2">
-<h2 class="anchored" data-anchor-id="initial-data-tidying">Initial data Tidying</h2>
+<h2 class="anchored" data-anchor-id="initial-data-tidying"><strong>Initial data Tidying</strong></h2>
+<section id="removing-aggregated-data-by-region" class="level3">
+<h3 class="anchored" data-anchor-id="removing-aggregated-data-by-region">Removing aggregated data by region</h3>
+<p>As shown previously, our dataset includes aggregated data which can bias our analysis. So we have to remove them.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>entity_to_remove <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"World"</span>, <span class="st">"G20 (Ember)"</span>, <span class="st">"High-income countries"</span>, <span class="st">"OECD (EI)"</span>, <span class="st">"Non-OECD (EI)"</span>, <span class="st">"Asia"</span>, <span class="st">"OECD (Ember)"</span>, <span class="st">"Asia Pacific (EI)"</span>, <span class="st">"Upper-middle-income countries"</span>, <span class="st">"Asia (Ember)"</span>, </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="st">"G7 (Ember)"</span>, <span class="st">"North America (EI)"</span>, <span class="st">"North America"</span>, <span class="st">"Europe"</span>, <span class="st">"Europe (EI)"</span>, <span class="st">"Europe (Ember)"</span>, <span class="st">"North America (Ember)"</span>, <span class="st">"European Union (27)"</span>,<span class="st">"EU (Ember)"</span>,<span class="st">"Lower-middle-income countries"</span>,<span class="st">"CIS (EI)"</span>, <span class="st">"South and Central America (EI)"</span>, <span class="st">"Latin America and Caribbean (Ember)"</span>,<span class="st">"South America"</span>, <span class="st">"Middle East (EI)"</span>, <span class="st">"Middle East (Ember)"</span>, <span class="st">"Africa"</span>, <span class="st">"Africa (EI)"</span>, <span class="st">"ASEAN (Ember)"</span>, <span class="st">"Africa (Ember)"</span>, <span class="st">"Oceania"</span>, <span class="st">"Oceania (Ember)"</span>, <span class="st">"Eastern Africa (EI)"</span>,<span class="st">"Western Africa (EI)"</span>, <span class="st">"Central America (EI)"</span>, <span class="st">"Middle Africa (EI)"</span></span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>energy_generation_by_countries <span class="ot">&lt;-</span> energy_generation_by_countries <span class="sc">|&gt;</span></span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="sc">!</span>Entity <span class="sc">%in%</span> entity_to_remove)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now the aggregates have been remove, let’s recompile the energy_summary by countries and update the dataframe.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>energy_summary <span class="ot">&lt;-</span>energy_generation_by_countries <span class="sc">|&gt;</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(Entity, Year) <span class="sc">|&gt;</span></span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(Entity) <span class="sc">|&gt;</span></span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">prev_year_generation =</span> <span class="fu">lag</span>(<span class="st">`</span><span class="at">Electricity generation - TWh</span><span class="st">`</span>),</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">annual_growth_rate =</span> (<span class="st">`</span><span class="at">Electricity generation - TWh</span><span class="st">`</span> <span class="sc">-</span> prev_year_generation) <span class="sc">/</span> prev_year_generation</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">total_generation_TWh =</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">Electricity generation - TWh</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_annual_growth =</span> <span class="fu">mean</span>(annual_growth_rate, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_year =</span> <span class="fu">min</span>(Year),</span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_year =</span> <span class="fu">max</span>(Year),</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">n_years =</span> <span class="fu">n</span>() <span class="sc">-</span> <span class="dv">1</span></span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">|&gt;</span></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(total_generation_TWh))</span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>energy_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 216 × 6
+   Entity       total_generation_TWh avg_annual_growth min_year max_year n_years
+   &lt;chr&gt;                       &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
+ 1 United Stat…              151136.           0.0132      1985     2024      39
+ 2 China                     139419.           0.0861      1985     2024      39
+ 3 Japan                      40711.           0.0113      1985     2024      39
+ 4 Russia                     40427.           0.00638     1985     2024      39
+ 5 India                      34261.           0.0639      1985     2024      39
+ 6 Canada                     23679.           0.00836     1985     2024      39
+ 7 Germany                    23045.          -0.00176     1985     2024      39
+ 8 France                     20510.           0.0134      1985     2024      39
+ 9 Brazil                     16913.           0.0355      1985     2024      39
+10 South Korea                14624.           0.0618      1985     2024      39
+# ℹ 206 more rows</code></pre>
+</div>
+</div>
+</section>
 <section id="renaming-columns" class="level3">
 <h3 class="anchored" data-anchor-id="renaming-columns">Renaming columns</h3>
-<p>Initial tidying happens previously, when we change the data format, character data type to double and removing “%” from the percent data values. Here we will rename the column by replacing spaces and parathesis by underscore, lowering character and deleting special characters. To achieve this, we will use the stringr library</p>
+<p>Let lower the names of the columns and remove all the spaces</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a>energy_production <span class="ot">&lt;-</span> energy_production <span class="sc">|&gt;</span></span>
-<span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_to_lower</span>(.)) <span class="sc">|&gt;</span></span>
-<span id="cb28-3"><a href="#cb28-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_replace_all</span>(., <span class="st">"[</span><span class="sc">\\</span><span class="st">s</span><span class="sc">\\</span><span class="st">(</span><span class="sc">\\</span><span class="st">)]+"</span>, <span class="st">"_"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb28-4"><a href="#cb28-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_replace_all</span>(., <span class="st">"[^a-z0-9_]"</span>, <span class="st">""</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb28-5"><a href="#cb28-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_replace_all</span>(., <span class="st">"_+"</span>, <span class="st">"_"</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb28-6"><a href="#cb28-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_replace_all</span>(., <span class="st">"^_|_$"</span>, <span class="st">""</span>)) <span class="sc">|&gt;</span></span>
-<span id="cb28-7"><a href="#cb28-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">ifelse</span>(<span class="fu">str_ends</span>(., <span class="st">"in"</span>), <span class="fu">paste0</span>(.,<span class="st">"_percent"</span>), .))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>energy_generation_by_countries <span class="ot">&lt;-</span> energy_generation_by_countries <span class="sc">|&gt;</span></span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_to_lower</span>(.)) <span class="sc">|&gt;</span></span>
+<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_replace_all</span>(., <span class="st">"[</span><span class="sc">\\</span><span class="st">s</span><span class="sc">\\</span><span class="st">-]+"</span>, <span class="st">"_"</span>)) <span class="sc">|&gt;</span></span>
+<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename_with</span>(<span class="sc">~</span> <span class="fu">str_replace_all</span>(., <span class="st">"[^a-z0-9_]"</span>, <span class="st">""</span>))</span>
+<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>energy_generation_by_countries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6,388 × 4
+   entity      code   year electricity_generation_twh
+   &lt;chr&gt;       &lt;chr&gt; &lt;dbl&gt;                      &lt;dbl&gt;
+ 1 Afghanistan AFG    2000                       0.48
+ 2 Afghanistan AFG    2001                       0.69
+ 3 Afghanistan AFG    2002                       0.71
+ 4 Afghanistan AFG    2003                       0.91
+ 5 Afghanistan AFG    2004                       0.79
+ 6 Afghanistan AFG    2005                       0.82
+ 7 Afghanistan AFG    2006                       0.9 
+ 8 Afghanistan AFG    2007                       1.01
+ 9 Afghanistan AFG    2008                       0.78
+10 Afghanistan AFG    2009                       0.89
+# ℹ 6,378 more rows</code></pre>
+</div>
 </div>
 </section>
 <section id="saving-data" class="level3">
 <h3 class="anchored" data-anchor-id="saving-data">Saving data</h3>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(energy_production, <span class="fu">here</span>(<span class="st">"data/processed/energy_production.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb16"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="fu">write_csv</span>(energy_generation_by_countries, <span class="fu">here</span>(<span class="st">"data/processed/energy_production.csv"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 </section>

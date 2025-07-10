@@ -1,5 +1,5 @@
 ---
-title: "Hybrid Solar power plan data analysis"
+title: "Electricity generation by countries"
 author:
   - name: "Eric Bidong Wakunga"
     orcid: "0009-0001-3770-5405"
@@ -12,16 +12,18 @@ author:
         country: "USA"
 date: today
 format: html
+execute: 
+  warning: false
 editor: visual
+editor_options: 
+  chunk_output_type: console
 ---
 
 # Introduction
 
-This is a hybrid solar power generation data. We will analyze the production patterns and compare with the consumption. We will be investigating what period of the year the production is here and what contribute to that? How the demand be growing for that plant? What was the contribution of diesel generation to the total generation over time?
+This is the global electricity generation dataset by countries over 10 to 30 years. We will use this for the capstone project to look the total production the last 10 years from the recent year in the dataset and the average production growth rate by countries.
 
-These are kind of questions we would like to answer through the analysis.
-
-# Methodes
+# Methods
 
 ## **Loading libraries**
 
@@ -36,7 +38,7 @@ library(dplyr)
 ## Reading data
 
 ```{r}
-energy_production <- read_csv(here("data/raw/capston_dataset.csv"))
+energy_generation_by_countries <- read_csv(here("data/raw/capston_dataset.csv"))
 ```
 
 ## Data Exploratory Approach
@@ -44,131 +46,118 @@ energy_production <- read_csv(here("data/raw/capston_dataset.csv"))
 ### Data summary
 
 ```{r}
-dim(energy_production)
+dim(energy_generation_by_countries)
 ```
 
+This dataset has 7653 rows and 4 columns.
+
+Let's visualize the first five rows to inspect the data.
+
 ```{r}
-head(energy_production)
+
+head(energy_generation_by_countries)
 ```
 
-Some data are coded as chr instead of double. This is due to the fact data came with "%" sign, hence R is reading it as charactor. Let's remove this and convert it into numeric values.
+The data looks good. There are some countries that are missing Code, but this is not important since we have the names of these countries.
+
+The data types are also correct.
+
+Let's group data by country and summarize the statistics for exploration.
 
 ```{r}
-energy_production <- energy_production |>
+
+energy_summary <- energy_generation_by_countries |>
+  group_by(Entity) |>
+  summarise(
+    total_generation_TWh = sum(`Electricity generation - TWh`, na.rm = TRUE),
+    n_years = n()
+  ) |>
+  arrange(desc(total_generation_TWh))
+
+energy_summary
+```
+
+As you can see, there are aggregated data by region (OECD, High-income countries, etc) that are included in this dataset. In the next section, we will remove those in order to stick with only countries.
+
+Let's now see the electricity generation growth rate by countries
+
+```{r}
+growth_rates <- energy_generation_by_countries |>
+  arrange(Entity, Year) |>
+  group_by(Entity) |>
   mutate(
-    across(
-      where(~ any(grepl("%", .))),
-      ~ as.numeric(gsub("%", "", .))))
+    prev_year_generation = lag(`Electricity generation - TWh`),
+    annual_growth_rate = (`Electricity generation - TWh` - prev_year_generation) / prev_year_generation
+  ) |>
+  summarise(
+    total_generation_TWh = sum(`Electricity generation - TWh`, na.rm = TRUE),
+    avg_annual_growth = mean(annual_growth_rate, na.rm = TRUE),
+    min_year = min(Year),
+    max_year = max(Year),
+    n_years = n() - 1
+  ) |>
+  arrange(desc(avg_annual_growth))
 
-glimpse(energy_production)
+growth_rates
 ```
 
-Now it looks good. There still one more numerical column that is show as chr instead of double. This is due to the fact that the data logger inserted some chains of character to state missing data. Let's convert it to numeric using "mutate" function so that all the characters become double.
+Energy generation growth rate is high in developing countries. This shows that much effort is put recently to increase the generation capacity. We could interestingly compare such data with GDP data or any other wealth metric to understand better what is going on in each country.
+
+## **Initial data Tidying**
+
+### Removing aggregated data by region
+
+As shown previously, our dataset includes aggregated data which can bias our analysis. So we have to remove them.
 
 ```{r}
-energy_production <- energy_production |> 
-  mutate(`Actual Irradiation (W/2)` = as.numeric(`Actual Irradiation (W/2)`))
+entity_to_remove <- c(
+  "World", "G20 (Ember)", "High-income countries", "OECD (EI)", "Non-OECD (EI)", "Asia", "OECD (Ember)", "Asia Pacific (EI)", "Upper-middle-income countries", "Asia (Ember)", 
+"G7 (Ember)", "North America (EI)", "North America", "Europe", "Europe (EI)", "Europe (Ember)", "North America (Ember)", "European Union (27)","EU (Ember)","Lower-middle-income countries","CIS (EI)", "South and Central America (EI)", "Latin America and Caribbean (Ember)","South America", "Middle East (EI)", "Middle East (Ember)", "Africa", "Africa (EI)", "ASEAN (Ember)", "Africa (Ember)", "Oceania", "Oceania (Ember)", "Eastern Africa (EI)","Western Africa (EI)", "Central America (EI)", "Middle Africa (EI)"
+)
 
-glimpse(energy_production)
+energy_generation_by_countries <- energy_generation_by_countries |>
+  filter(!Entity %in% entity_to_remove)
 ```
 
-Let convert date to a normal format that lubridate library can understand.
+Now the aggregates have been remove, let's recompile the energy_summary by countries and update the dataframe.
 
 ```{r}
-library(lubridate)
-energy_production <- energy_production |>
-  mutate(`Date` = mdy(`Date`))
+energy_summary <-energy_generation_by_countries |>
+  arrange(Entity, Year) |>
+  group_by(Entity) |>
+  mutate(
+    prev_year_generation = lag(`Electricity generation - TWh`),
+    annual_growth_rate = (`Electricity generation - TWh` - prev_year_generation) / prev_year_generation
+  ) |>
+  summarise(
+    total_generation_TWh = sum(`Electricity generation - TWh`, na.rm = TRUE),
+    avg_annual_growth = mean(annual_growth_rate, na.rm = TRUE),
+    min_year = min(Year),
+    max_year = max(Year),
+    n_years = n() - 1
+  ) |>
+  arrange(desc(total_generation_TWh))
+
+energy_summary
 ```
-
-```{r}
-monthly_energy_production <- energy_production |>
-  mutate(month = floor_date(`Date`,"month")) |>
-  group_by(`Site Region`, month) |>
-  summarize(total_generation = sum(`Actual Energy Exported to DN (KWh)`, na.rm = TRUE))
-```
-
-### Data visualization
-
-```{r}
-library(ggplot2)
-
-site1_plot <- monthly_energy_production |>
-  filter(`Site Region` == "S1") |>
-  ggplot(aes(x = month, y = total_generation)) +
-  geom_col(fill = "skyblue") +
-  geom_line(color = "darkblue", size = 1) +
-  labs(
-    title = "Monthly Solar Generation for Site 1", 
-    x = "Month",
-    y = "Generation (kWh)"
-  ) +
-  scale_x_date(date_labels = "%Y-%m", date_breaks = "6 months") +
-  theme_minimal() +
-  theme(
-    axis.text = element_text(angle=45, hjust = 1), 
-  )
-
-library(ggplot2)
-
-site2_plot <- monthly_energy_production |>
-  filter(`Site Region` == "S2") |>
-  ggplot(aes(x = month, y = total_generation)) +
-  geom_col(fill = "skyblue") +
-  geom_line(color = "darkblue", size = 1) +
-  labs(
-    title = "Monthly Solar Generation for Site 2", 
-    x = "Month",
-    y = "Generation (kWh)"
-  ) +
-  scale_x_date(date_labels = "%Y-%m", date_breaks = "6 months") +
-  theme_minimal() +
-  theme(
-    axis.text = element_text(angle=45, hjust = 1), 
-  )
-
-library(ggplot2)
-
-site3_plot <- monthly_energy_production |>
-  filter(`Site Region` == "S3") |>
-  ggplot(aes(x = month, y = total_generation)) +
-  geom_col(fill = "skyblue") +
-  geom_line(color = "darkblue", size = 1) +
-  labs(
-    title = "Monthly Solar Generation for Site 3", 
-    x = "Month",
-    y = "Generation (kWh)"
-  ) +
-  scale_x_date(date_labels = "%Y-%m", date_breaks = "6 months") +
-  theme_minimal() +
-  theme(
-    axis.text = element_text(angle=45, hjust = 1), 
-  )
-
-site1_plot
-site2_plot
-site3_plot
-```
-
-## Initial data Tidying
 
 ### Renaming columns
 
-Initial tidying happens previously, when we change the data format, character data type to double and removing "%" from the percent data values. Here we will rename the column by replacing spaces and parathesis by underscore, lowering character and deleting special characters. To achieve this, we will use the stringr library
+Let lower the names of the columns and remove all the spaces
 
 ```{r}
-energy_production <- energy_production |>
+energy_generation_by_countries <- energy_generation_by_countries |>
   rename_with(~ str_to_lower(.)) |>
-  rename_with(~ str_replace_all(., "[\\s\\(\\)]+", "_")) |>
-  rename_with(~ str_replace_all(., "[^a-z0-9_]", "")) |>
-  rename_with(~ str_replace_all(., "_+", "_")) |>
-  rename_with(~ str_replace_all(., "^_|_$", "")) |>
-  rename_with(~ ifelse(str_ends(., "in"), paste0(.,"_percent"), .))
+  rename_with(~ str_replace_all(., "[\\s\\-]+", "_")) |>
+  rename_with(~ str_replace_all(., "[^a-z0-9_]", ""))
+
+energy_generation_by_countries
 ```
 
 ### Saving data
 
 ```{r}
-write_csv(energy_production, here("data/processed/energy_production.csv"))
+write_csv(energy_generation_by_countries, here("data/processed/energy_production.csv"))
 ```
 
 # Results
