@@ -17,13 +17,18 @@ execute:
 editor: visual
 editor_options: 
   chunk_output_type: console
+bibliography: references.bib
+csl: apa-5th-edition.csl
+link-citations: true
 ---
 
 # Introduction
 
-This is the global electricity generation dataset by countries over 10 to 30 years. We will use this for the capstone project to look the total production the last 10 years from the recent year in the dataset and the average production growth rate by countries.
+This dataset [@ourworldindata2025electricity] provides historical electricity generation data TWh for countries and regions around the world, covering the year 1985 through 2024. This data was compiled to track energy production trends over time and support energy planning, policy evaluation, and investment analysis. By analyzing this dataset, we can identify which countries have scaled their electricity systems significantly and which ones have stagnated. This analysis is particularly relevant for global efforts toward energy access, sustainability, and emissions reduction.
 
 # Methods
+
+The electricity generation dataset was compiled by *Our World in Data* based on original sources from Ember and the Energy Institute's *Statistical Review of World Energy (2025)*. It includes major post-processing by Our World in Data to standardize and harmonize national statistics. The dataset covers total electricity generated per country annually, measured in terawatt-hours, over the period 1985 to 2024. It was last updated in June 2025 and is intended to support global energy analysis and policy research.
 
 ## **Loading libraries**
 
@@ -33,6 +38,10 @@ This is the global electricity generation dataset by countries over 10 to 30 yea
 library(tidyverse)
 library(here)
 library(dplyr)
+library(RColorBrewer)
+library(ggplot2)
+library(gt)
+library(ggrepel)
 ```
 
 ## Reading data
@@ -112,7 +121,7 @@ As shown previously, our dataset includes aggregated data which can bias our ana
 ```{r}
 entity_to_remove <- c(
   "World", "G20 (Ember)", "High-income countries", "OECD (EI)", "Non-OECD (EI)", "Asia", "OECD (Ember)", "Asia Pacific (EI)", "Upper-middle-income countries", "Asia (Ember)", 
-"G7 (Ember)", "North America (EI)", "North America", "Europe", "Europe (EI)", "Europe (Ember)", "North America (Ember)", "European Union (27)","EU (Ember)","Lower-middle-income countries","CIS (EI)", "South and Central America (EI)", "Latin America and Caribbean (Ember)","South America", "Middle East (EI)", "Middle East (Ember)", "Africa", "Africa (EI)", "ASEAN (Ember)", "Africa (Ember)", "Oceania", "Oceania (Ember)", "Eastern Africa (EI)","Western Africa (EI)", "Central America (EI)", "Middle Africa (EI)"
+"G7 (Ember)", "North America (EI)", "North America", "Europe", "Europe (EI)", "Europe (Ember)", "North America (Ember)", "European Union (27)","EU (Ember)","Lower-middle-income countries","CIS (EI)", "South and Central America (EI)", "Latin America and Caribbean (Ember)","South America", "Middle East (EI)", "Middle East (Ember)", "Africa", "Africa (EI)", "ASEAN (Ember)", "Africa (Ember)", "Oceania", "Oceania (Ember)", "Eastern Africa (EI)","Western Africa (EI)", "Central America (EI)", "Middle Africa (EI)", 'Western Sahara'
 )
 
 energy_generation_by_countries <- energy_generation_by_countries |>
@@ -162,8 +171,196 @@ write_csv(energy_generation_by_countries, here("data/processed/energy_production
 
 # Results
 
+## Time coverage in data by each country
+
+We want to check for what periode of time there is electrical generation data for each country before performing other EDA.
+
+```{r}
+energy_summary_grouped <- energy_summary |>
+  mutate(time_range = paste(min_year, max_year, sep='-'))
+```
+
+```{r}
+# Create a new label column showing "start–end" range
+energy_summary_labeled <- energy_summary %>%
+  mutate(range_label = paste(min_year, max_year, sep = "–"))
+```
+
+```{r}
+#| label: fig-electricity-eneration-data-time-span
+#| fig-cap: Electricity Generation Data Time Span.
+#| alt: Bar plot with year spans representing the availability of data.
+
+ggplot(energy_summary_labeled, aes(y = reorder(range_label, min_year),  
+                                   x = min_year,
+                                   xend = max_year)) +
+  geom_segment(aes(xend = max_year, yend = range_label),
+               size = 2, color = "darkgreen") +
+  labs(
+    title = "Electricity Generation Data Time Span",
+    x = "Year",
+    y = "Time Range (Start–End Year)"
+  ) +
+  scale_x_continuous(breaks = seq(1985,2024, by=2), limits = c(1985,2024))+
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+```
+
+Not all the countries have data for the last 39 years. the @fig-electricity-eneration-data-time-span graph provides the span for each category. This will help to better understand trend later in our analysis.
+
+## Average annual growth vs total generation
+
+Let's look at the relationship between electricity generation growth vs total generation.
+
+```{r}
+#| label: fig-growth-vs-total-annotated
+#| fig-cap: Electricity generation vs growth rate.
+#| alt: Scatter plot with labeled bubbles showing countries’ total electricity generation and growth rate. Labels avoid overlap using leader lines.
+
+
+energy_annotated <- energy_summary %>%
+  mutate(growth_percent = avg_annual_growth * 100)  # Convert to percent
+
+ggplot(energy_annotated, aes(x = total_generation_TWh, y = growth_percent)) +
+  geom_point(color = "darkorange", size = 3, alpha = 0.7) +                      # Bubbles
+  geom_smooth(method = "lm", se = FALSE, color = "gray40", linetype = "dashed") +  # Trendline
+  geom_text_repel(aes(label = Entity), size = 3, max.overlaps = 100) +          # Non-overlapping country labels
+  labs(
+    title = "Electricity Generation vs Growth Rate (with Country Labels)",
+    x = "Total Generation (TWh)",
+    y = "Average Annual Growth Rate (%)"
+  ) +
+  theme_minimal()
+```
+
+From this @fig-growth-vs-total-annotated, it turns out that industrialized countries such USA, China, Japon, India, South Corea have low growth rate compared to developing countries. China generation capacity is growing faster that USA, yet they generation capacity is close to each other. Palestine has the biggest growth rate, though it generation still is low.
+
+Let's group countries by low midium, high and very high growth rate in the @tbl-growth-class-list
+
+```{r}
+#| label: tbl-growth-class-list
+#| tbl-cap: Grouping of countries by average annual electricity generation growth rate.
+
+
+# Step 1: Classify growth and assign sorting order
+classified_growth <- energy_summary %>%
+  mutate(
+    growth_class = case_when(
+      avg_annual_growth <= 0.02 ~ "Low (≤ 2%)",
+      avg_annual_growth <= 0.10 ~ "Medium (>2% – ≤10%)",
+      avg_annual_growth <= 0.15 ~ "High (>10% – ≤15%)",
+      avg_annual_growth >  0.15 ~ "Very High (> 15%)"
+    ),
+    class_order = case_when(
+      growth_class == "Low (≤ 2%)" ~ 4,
+      growth_class == "Medium (>2% – ≤10%)" ~ 3,
+      growth_class == "High (>10% – ≤15%)" ~ 2,
+      growth_class == "Very High (> 15%)" ~ 1
+    )
+  )
+
+# Step 2: Group and list countries per class
+growth_summary <- classified_growth %>%
+  group_by(growth_class, class_order) %>%
+  summarise(`List of Countries` = paste(sort(Entity), collapse = ", "), .groups = "drop") %>%
+  arrange(class_order) %>%
+  select(`Growth Category` = growth_class, `List of Countries`)
+
+# Step 3: Render the table
+gt(growth_summary) %>%
+  tab_header(title = "Countries by Growth Rate Category") %>%
+  cols_width(`List of Countries` ~ px(600))
+```
+
+## Generation trend
+
+Let's look at the historical trend and see who which countries are showing positive pace.
+
+```{r}
+#| label: fig-electricity-eneration-trend
+#| fig-cap: Electricity Generation trend for each countries
+#| alt: line plot representing trend in the electricity generation.
+
+# Step 1: Identify top 15 countries by total generation
+top_15 <- energy_summary |>
+  arrange(desc(total_generation_TWh)) |>
+  slice(1:15) |>
+  pull(Entity)
+
+# Step 2: Add color flag to the full dataset
+energy_trend_labeled <- energy_generation_by_countries |>
+  rename(generation_TWh = electricity_generation_twh) |>
+  mutate(highlight = ifelse(entity %in% top_15, entity, "Other"))
+
+# Step 3: Define distinct color palette for top 15 + gray for others
+top_colors <- setNames(c(brewer.pal(12, "Set3"), brewer.pal(3, "Dark2")), top_15)
+all_colors <- c("Other" = "gray80", top_colors)
+
+# Step 4: Plot
+ggplot(energy_trend_labeled, aes(x = year, y = generation_TWh, group = entity, color = highlight)) +
+  geom_line(alpha = 0.8, linewidth = 0.7) +
+  scale_color_manual(
+    values = all_colors,
+    breaks = top_15,                     # legend will only show the top 15
+    guide = guide_legend(override.aes = list(linewidth = 1.5))
+  ) +
+  labs(
+    title = "Electricity Generation Trend by Country",
+    x = "Year",
+    y = "Electricity Generation (TWh)",
+    color = "Top 15 Countries"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "right")
+
+```
+
+This @fig-electricity-eneration-trend graph show how China growth is significant, it is far way higher than USA that he crossed in around 2010. He is followed by USA which the trend seem flat and India which has taken off. Other developed countried like Russia, France, Japan, etc. also have a flat trend, no visible growth.
+
+## Summary statistics of China
+
+As the chart above has depicted Chine and USA, let see what their summary statistics are in the table @tbl-china-usa-summary below.
+
+```{r}
+#| label: tbl-china-usa-summary
+#| tbl-cap: Summary statistics of electricity generation for China and the USA
+
+
+# Filter for China and USA
+china_usa_summary <- energy_generation_by_countries %>%
+  filter(entity %in% c("China", "United States")) %>%
+  group_by(entity) %>%
+  summarise(
+    Start = min(year, na.rm = TRUE),
+    End = max(year, na.rm = TRUE),
+    `Nb Year` = n(),
+    `Total generation [TWh]` = sum(`electricity_generation_twh`, na.rm = TRUE),
+    `Avg generation [TWh]` = mean(`electricity_generation_twh`, na.rm = TRUE),
+    `Min generation [TWh]` = min(`electricity_generation_twh`, na.rm = TRUE),
+    `Max generation [TWh]` = max(`electricity_generation_twh`, na.rm = TRUE),
+    `Avg annual growth` = (last(`electricity_generation_twh`) / first(`electricity_generation_twh`))^(1/(`Nb Year` - 1)) - 1)
+
+gt(china_usa_summary) %>%
+  fmt_percent(columns = `Avg annual growth`, decimals = 2) %>%
+  fmt_number(columns = matches("Generation"), decimals = 1)
+```
+
 # Conclusions
+
+The analysis of historical electricity generation data from 1985 to 2024 reveals significant differences in both the scale and growth of energy production across the 215 countries. High-output nations such as China and the United States dominate in total generation, while several smaller economies demonstrate rapid growth path. By classifying countries into growth categories, we can distinguish between mature, expanding, and lagging electricity systems which offers insights for policymakers, investors, and energy planners. The dataset also highlights the uneven availability of historical data, which can affect some types of comparisons. Overall, this dataset provides a valuable foundation for understanding global electricity trends and important strategic decisions toward energy transition and access.
 
 ## Summary of Findings
 
+This project provide a glimpse to undertand the energy generation trend around the globe. The analysis is conducted on 215 countries and yield the following result:
+
+1.  China is leading the energy generation race globally, along with many of the developping countries such as Benin and Palestine.
+
+2.  India also showing a wake up trend.
+
+3.  With the current trend, China generation capacity will surpass the USA, as it has done for Japan, Russia, and other developed countries.
+
 ### Questions and Next Steps
+
+1.  How does electricity generation correlate with development indicators
+2.  Are countries with low or negative growth facing structural challenges?
+3.  What is the role of renewable energy in total generation and growth patterns

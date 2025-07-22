@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Eric Bidong Wakunga">
-<meta name="dcterms.date" content="2025-07-10">
+<meta name="dcterms.date" content="2025-07-22">
 
 <title>Electricity generation by countries</title>
 <style>
@@ -57,7 +57,27 @@ div.sourceCode
 @media screen {
 pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
 }
-</style>
+/* CSS for citations */
+div.csl-bib-body { }
+div.csl-entry {
+  clear: both;
+  margin-bottom: 0em;
+}
+.hanging-indent div.csl-entry {
+  margin-left:2em;
+  text-indent:-2em;
+}
+div.csl-left-margin {
+  min-width:2em;
+  float:left;
+}
+div.csl-right-inline {
+  margin-left:2em;
+  padding-left:1em;
+}
+div.csl-indent {
+  margin-left: 2em;
+}</style>
 
 
 <script src="index_files/libs/clipboard/clipboard.min.js"></script>
@@ -107,7 +127,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 10, 2025</p>
+      <p class="date">July 22, 2025</p>
     </div>
   </div>
   
@@ -121,7 +141,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="introduction" class="level1">
 <h1>Introduction</h1>
-<p>This is the global electricity generation dataset by countries over 10 to 30 years. We will use this for the capstone project to look the total production the last 10 years from the recent year in the dataset and the average production growth rate by countries.</p>
+<p>This dataset <span class="citation" data-cites="ourworldindata2025electricity">(<a href="#ref-ourworldindata2025electricity" role="doc-biblioref">Data, 2025</a>)</span> provides historical electricity generation data TWh for countries and regions around the world, covering the year 1985 through 2024. This data was compiled to track energy production trends over time and support energy planning, policy evaluation, and investment analysis. By analyzing this dataset, we can identify which countries have scaled their electricity systems significantly and which ones have stagnated. This analysis is particularly relevant for global efforts toward energy access, sustainability, and emissions reduction.</p>
 </section>
 <section id="methods" class="level1">
 <h1>Methods</h1>
@@ -132,7 +152,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
 <span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(here)</span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(dplyr)</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(RColorBrewer)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(gt)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(ggrepel)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="reading-data" class="level2">
@@ -245,7 +269,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <div class="cell">
 <div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>entity_to_remove <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
 <span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>  <span class="st">"World"</span>, <span class="st">"G20 (Ember)"</span>, <span class="st">"High-income countries"</span>, <span class="st">"OECD (EI)"</span>, <span class="st">"Non-OECD (EI)"</span>, <span class="st">"Asia"</span>, <span class="st">"OECD (Ember)"</span>, <span class="st">"Asia Pacific (EI)"</span>, <span class="st">"Upper-middle-income countries"</span>, <span class="st">"Asia (Ember)"</span>, </span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="st">"G7 (Ember)"</span>, <span class="st">"North America (EI)"</span>, <span class="st">"North America"</span>, <span class="st">"Europe"</span>, <span class="st">"Europe (EI)"</span>, <span class="st">"Europe (Ember)"</span>, <span class="st">"North America (Ember)"</span>, <span class="st">"European Union (27)"</span>,<span class="st">"EU (Ember)"</span>,<span class="st">"Lower-middle-income countries"</span>,<span class="st">"CIS (EI)"</span>, <span class="st">"South and Central America (EI)"</span>, <span class="st">"Latin America and Caribbean (Ember)"</span>,<span class="st">"South America"</span>, <span class="st">"Middle East (EI)"</span>, <span class="st">"Middle East (Ember)"</span>, <span class="st">"Africa"</span>, <span class="st">"Africa (EI)"</span>, <span class="st">"ASEAN (Ember)"</span>, <span class="st">"Africa (Ember)"</span>, <span class="st">"Oceania"</span>, <span class="st">"Oceania (Ember)"</span>, <span class="st">"Eastern Africa (EI)"</span>,<span class="st">"Western Africa (EI)"</span>, <span class="st">"Central America (EI)"</span>, <span class="st">"Middle Africa (EI)"</span></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a><span class="st">"G7 (Ember)"</span>, <span class="st">"North America (EI)"</span>, <span class="st">"North America"</span>, <span class="st">"Europe"</span>, <span class="st">"Europe (EI)"</span>, <span class="st">"Europe (Ember)"</span>, <span class="st">"North America (Ember)"</span>, <span class="st">"European Union (27)"</span>,<span class="st">"EU (Ember)"</span>,<span class="st">"Lower-middle-income countries"</span>,<span class="st">"CIS (EI)"</span>, <span class="st">"South and Central America (EI)"</span>, <span class="st">"Latin America and Caribbean (Ember)"</span>,<span class="st">"South America"</span>, <span class="st">"Middle East (EI)"</span>, <span class="st">"Middle East (Ember)"</span>, <span class="st">"Africa"</span>, <span class="st">"Africa (EI)"</span>, <span class="st">"ASEAN (Ember)"</span>, <span class="st">"Africa (Ember)"</span>, <span class="st">"Oceania"</span>, <span class="st">"Oceania (Ember)"</span>, <span class="st">"Eastern Africa (EI)"</span>,<span class="st">"Western Africa (EI)"</span>, <span class="st">"Central America (EI)"</span>, <span class="st">"Middle Africa (EI)"</span>, <span class="st">'Western Sahara'</span></span>
 <span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>energy_generation_by_countries <span class="ot">&lt;-</span> energy_generation_by_countries <span class="sc">|&gt;</span></span>
@@ -271,7 +295,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>energy_summary</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 216 × 6
+<pre><code># A tibble: 215 × 6
    Entity       total_generation_TWh avg_annual_growth min_year max_year n_years
    &lt;chr&gt;                       &lt;dbl&gt;             &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;
  1 United Stat…              151136.           0.0132      1985     2024      39
@@ -284,7 +308,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  8 France                     20510.           0.0134      1985     2024      39
  9 Brazil                     16913.           0.0355      1985     2024      39
 10 South Korea                14624.           0.0618      1985     2024      39
-# ℹ 206 more rows</code></pre>
+# ℹ 205 more rows</code></pre>
 </div>
 </div>
 </section>
@@ -299,7 +323,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb14-6"><a href="#cb14-6" aria-hidden="true" tabindex="-1"></a>energy_generation_by_countries</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 6,388 × 4
+<pre><code># A tibble: 6,378 × 4
    entity      code   year electricity_generation_twh
    &lt;chr&gt;       &lt;chr&gt; &lt;dbl&gt;                      &lt;dbl&gt;
  1 Afghanistan AFG    2000                       0.48
@@ -312,7 +336,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
  8 Afghanistan AFG    2007                       1.01
  9 Afghanistan AFG    2008                       0.78
 10 Afghanistan AFG    2009                       0.89
-# ℹ 6,378 more rows</code></pre>
+# ℹ 6,368 more rows</code></pre>
 </div>
 </div>
 </section>
@@ -326,18 +350,1102 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </section>
 <section id="results" class="level1">
 <h1>Results</h1>
+<section id="time-coverage-in-data-by-each-country" class="level2">
+<h2 class="anchored" data-anchor-id="time-coverage-in-data-by-each-country">Time coverage in data by each country</h2>
+<p>We want to check for what periode of time there is electrical generation data for each country before performing other EDA.</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>energy_summary_grouped <span class="ot">&lt;-</span> energy_summary <span class="sc">|&gt;</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time_range =</span> <span class="fu">paste</span>(min_year, max_year, <span class="at">sep=</span><span class="st">'-'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new label column showing "start–end" range</span></span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>energy_summary_labeled <span class="ot">&lt;-</span> energy_summary <span class="sc">%&gt;%</span></span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">range_label =</span> <span class="fu">paste</span>(min_year, max_year, <span class="at">sep =</span> <span class="st">"–"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<div class="cell" alt="Bar plot with year spans representing the availability of data.">
+<div class="cell-output-display">
+<div id="fig-electricity-eneration-data-time-span" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-electricity-eneration-data-time-span-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-electricity-eneration-data-time-span-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-electricity-eneration-data-time-span-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1: Electricity Generation Data Time Span.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>Not all the countries have data for the last 39 years. the <a href="#fig-electricity-eneration-data-time-span" class="quarto-xref">Figure&nbsp;1</a> graph provides the span for each category. This will help to better understand trend later in our analysis.</p>
+</section>
+<section id="average-annual-growth-vs-total-generation" class="level2">
+<h2 class="anchored" data-anchor-id="average-annual-growth-vs-total-generation">Average annual growth vs total generation</h2>
+<p>Let’s look at the relationship between electricity generation growth vs total generation.</p>
+<div class="cell" alt="Scatter plot with labeled bubbles showing countries’ total electricity generation and growth rate. Labels avoid overlap using leader lines.">
+<div class="cell-output-display">
+<div id="fig-growth-vs-total-annotated" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-growth-vs-total-annotated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-growth-vs-total-annotated-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-growth-vs-total-annotated-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2: Electricity generation vs growth rate.
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>From this <a href="#fig-growth-vs-total-annotated" class="quarto-xref">Figure&nbsp;2</a>, it turns out that industrialized countries such USA, China, Japon, India, South Corea have low growth rate compared to developing countries. China generation capacity is growing faster that USA, yet they generation capacity is close to each other. Palestine has the biggest growth rate, though it generation still is low.</p>
+<p>Let’s group countries by low midium, high and very high growth rate in the <a href="#tbl-growth-class-list" class="quarto-xref">Table&nbsp;1</a></p>
+<div class="cell">
+<div id="tbl-growth-class-list" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-growth-class-list-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;1: Grouping of countries by average annual electricity generation growth rate.
+</figcaption>
+<div aria-describedby="tbl-growth-class-list-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="wbimfaekvy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#wbimfaekvy table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#wbimfaekvy thead, #wbimfaekvy tbody, #wbimfaekvy tfoot, #wbimfaekvy tr, #wbimfaekvy td, #wbimfaekvy th {
+  border-style: none;
+}
+
+#wbimfaekvy p {
+  margin: 0;
+  padding: 0;
+}
+
+#wbimfaekvy .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#wbimfaekvy .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#wbimfaekvy .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#wbimfaekvy .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#wbimfaekvy .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#wbimfaekvy .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#wbimfaekvy .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#wbimfaekvy .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#wbimfaekvy .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#wbimfaekvy .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#wbimfaekvy .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#wbimfaekvy .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#wbimfaekvy .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#wbimfaekvy .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#wbimfaekvy .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wbimfaekvy .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#wbimfaekvy .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#wbimfaekvy .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#wbimfaekvy .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wbimfaekvy .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#wbimfaekvy .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wbimfaekvy .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#wbimfaekvy .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wbimfaekvy .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#wbimfaekvy .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#wbimfaekvy .gt_left {
+  text-align: left;
+}
+
+#wbimfaekvy .gt_center {
+  text-align: center;
+}
+
+#wbimfaekvy .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#wbimfaekvy .gt_font_normal {
+  font-weight: normal;
+}
+
+#wbimfaekvy .gt_font_bold {
+  font-weight: bold;
+}
+
+#wbimfaekvy .gt_font_italic {
+  font-style: italic;
+}
+
+#wbimfaekvy .gt_super {
+  font-size: 65%;
+}
+
+#wbimfaekvy .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#wbimfaekvy .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#wbimfaekvy .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#wbimfaekvy .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#wbimfaekvy .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#wbimfaekvy .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#wbimfaekvy .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#wbimfaekvy .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#wbimfaekvy div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_heading header">
+<th colspan="2" class="gt_heading gt_title gt_font_normal gt_bottom_border">Countries by Growth Rate Category</th>
+</tr>
+<tr class="gt_col_headings even">
+<th id="Growth-Category" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">Growth Category</th>
+<th id="List-of-Countries" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">List of Countries</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="Growth Category">Very High (&gt; 15%)</td>
+<td class="gt_row gt_left" headers="List of Countries">Benin, Cambodia, Equatorial Guinea, Laos, Palestine</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Growth Category">High (&gt;10% – ≤15%)</td>
+<td class="gt_row gt_left" headers="List of Countries">Angola, Congo, East Timor, Ethiopia, Togo, Vietnam</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Growth Category">Medium (&gt;2% – ≤10%)</td>
+<td class="gt_row gt_left" headers="List of Countries">Afghanistan, Albania, Algeria, Antigua and Barbuda, Argentina, Armenia, Australia, Bahrain, Bangladesh, Belize, Bhutan, Bolivia, Bosnia and Herzegovina, Botswana, Brazil, British Virgin Islands, Brunei, Burkina Faso, Burundi, Cameroon, Cape Verde, Cayman Islands, Central African Republic, Chad, Chile, China, Colombia, Comoros, Costa Rica, Cote d'Ivoire, Croatia, Cyprus, Democratic Republic of Congo, Djibouti, Dominica, Dominican Republic, Ecuador, Egypt, El Salvador, Eritrea, Falkland Islands, Faroe Islands, French Guiana, French Polynesia, Gabon, Gambia, Georgia, Ghana, Gibraltar, Greece, Greenland, Grenada, Guatemala, Guinea, Guinea-Bissau, Guyana, Haiti, Honduras, Iceland, India, Indonesia, Iran, Iraq, Ireland, Israel, Jordan, Kenya, Kiribati, Kosovo, Kuwait, Lesotho, Liberia, Libya, Low-income countries, Luxembourg, Madagascar, Malawi, Malaysia, Maldives, Mali, Malta, Mauritania, Mauritius, Mexico, Mongolia, Montenegro, Morocco, Mozambique, Myanmar, Namibia, Nauru, Nepal, New Caledonia, Nicaragua, Niger, Nigeria, Oman, Pakistan, Panama, Papua New Guinea, Peru, Philippines, Portugal, Qatar, Reunion, Rwanda, Samoa, Sao Tome and Principe, Saudi Arabia, Senegal, Seychelles, Sierra Leone, Singapore, Solomon Islands, Somalia, South Korea, South Sudan, Spain, Sri Lanka, Sudan, Suriname, Taiwan, Tajikistan, Tanzania, Thailand, Tonga, Trinidad and Tobago, Tunisia, Turkey, Turkmenistan, Turks and Caicos Islands, Uganda, United Arab Emirates, Uruguay, Vanuatu, Zambia</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="Growth Category">Low (≤ 2%)</td>
+<td class="gt_row gt_left" headers="List of Countries">American Samoa, Aruba, Austria, Azerbaijan, Bahamas, Barbados, Belarus, Belgium, Bermuda, Bulgaria, Canada, Cook Islands, Cuba, Czechia, Denmark, Estonia, Eswatini, Fiji, Finland, France, Germany, Guadeloupe, Guam, Hong Kong, Hungary, Italy, Jamaica, Japan, Kazakhstan, Kyrgyzstan, Latvia, Lebanon, Lithuania, Macao, Martinique, Moldova, Montserrat, Netherlands, New Zealand, North Korea, North Macedonia, Norway, Paraguay, Poland, Puerto Rico, Romania, Russia, Saint Helena, Saint Kitts and Nevis, Saint Lucia, Saint Pierre and Miquelon, Saint Vincent and the Grenadines, Serbia, Slovakia, Slovenia, South Africa, Sweden, Switzerland, Syria, Ukraine, United Kingdom, United States, United States Virgin Islands, Uzbekistan, Venezuela, Yemen, Zimbabwe</td>
+</tr>
+<tr class="odd">
+<td class="gt_row gt_left" headers="Growth Category">NA</td>
+<td class="gt_row gt_left" headers="List of Countries">Niue</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
+<section id="generation-trend" class="level2">
+<h2 class="anchored" data-anchor-id="generation-trend">Generation trend</h2>
+<p>Let’s look at the historical trend and see who which countries are showing positive pace.</p>
+<div class="cell" alt="line plot representing trend in the electricity generation.">
+<div class="cell-output-display">
+<div id="fig-electricity-eneration-trend" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-electricity-eneration-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="index_files/figure-html/fig-electricity-eneration-trend-1.png" class="img-fluid figure-img" width="672">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-electricity-eneration-trend-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;3: Electricity Generation trend for each countries
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p>This <a href="#fig-electricity-eneration-trend" class="quarto-xref">Figure&nbsp;3</a> graph show how China growth is significant, it is far way higher than USA that he crossed in around 2010. He is followed by USA which the trend seem flat and India which has taken off. Other developed countried like Russia, France, Japan, etc. also have a flat trend, no visible growth.</p>
+</section>
+<section id="summary-statistics-of-china" class="level2">
+<h2 class="anchored" data-anchor-id="summary-statistics-of-china">Summary statistics of China</h2>
+<p>As the chart above has depicted Chine and USA, let see what their summary statistics are in the table <a href="#tbl-china-usa-summary" class="quarto-xref">Table&nbsp;2</a> below.</p>
+<div class="cell">
+<div id="tbl-china-usa-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-tbl figure">
+<figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-china-usa-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Table&nbsp;2: Summary statistics of electricity generation for China and the USA
+</figcaption>
+<div aria-describedby="tbl-china-usa-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div class="cell-output-display">
+<div id="oriwkpcaxh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#oriwkpcaxh table {
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#oriwkpcaxh thead, #oriwkpcaxh tbody, #oriwkpcaxh tfoot, #oriwkpcaxh tr, #oriwkpcaxh td, #oriwkpcaxh th {
+  border-style: none;
+}
+
+#oriwkpcaxh p {
+  margin: 0;
+  padding: 0;
+}
+
+#oriwkpcaxh .gt_table {
+  display: table;
+  border-collapse: collapse;
+  line-height: normal;
+  margin-left: auto;
+  margin-right: auto;
+  color: #333333;
+  font-size: 16px;
+  font-weight: normal;
+  font-style: normal;
+  background-color: #FFFFFF;
+  width: auto;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #A8A8A8;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #A8A8A8;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_caption {
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+#oriwkpcaxh .gt_title {
+  color: #333333;
+  font-size: 125%;
+  font-weight: initial;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-color: #FFFFFF;
+  border-bottom-width: 0;
+}
+
+#oriwkpcaxh .gt_subtitle {
+  color: #333333;
+  font-size: 85%;
+  font-weight: initial;
+  padding-top: 3px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-color: #FFFFFF;
+  border-top-width: 0;
+}
+
+#oriwkpcaxh .gt_heading {
+  background-color: #FFFFFF;
+  text-align: center;
+  border-bottom-color: #FFFFFF;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_bottom_border {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_col_headings {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_col_heading {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 6px;
+  padding-left: 5px;
+  padding-right: 5px;
+  overflow-x: hidden;
+}
+
+#oriwkpcaxh .gt_column_spanner_outer {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: normal;
+  text-transform: inherit;
+  padding-top: 0;
+  padding-bottom: 0;
+  padding-left: 4px;
+  padding-right: 4px;
+}
+
+#oriwkpcaxh .gt_column_spanner_outer:first-child {
+  padding-left: 0;
+}
+
+#oriwkpcaxh .gt_column_spanner_outer:last-child {
+  padding-right: 0;
+}
+
+#oriwkpcaxh .gt_column_spanner {
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: bottom;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  overflow-x: hidden;
+  display: inline-block;
+  width: 100%;
+}
+
+#oriwkpcaxh .gt_spanner_row {
+  border-bottom-style: hidden;
+}
+
+#oriwkpcaxh .gt_group_heading {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  text-align: left;
+}
+
+#oriwkpcaxh .gt_empty_group_heading {
+  padding: 0.5px;
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  vertical-align: middle;
+}
+
+#oriwkpcaxh .gt_from_md > :first-child {
+  margin-top: 0;
+}
+
+#oriwkpcaxh .gt_from_md > :last-child {
+  margin-bottom: 0;
+}
+
+#oriwkpcaxh .gt_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  margin: 10px;
+  border-top-style: solid;
+  border-top-width: 1px;
+  border-top-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 1px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 1px;
+  border-right-color: #D3D3D3;
+  vertical-align: middle;
+  overflow-x: hidden;
+}
+
+#oriwkpcaxh .gt_stub {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oriwkpcaxh .gt_stub_row_group {
+  color: #333333;
+  background-color: #FFFFFF;
+  font-size: 100%;
+  font-weight: initial;
+  text-transform: inherit;
+  border-right-style: solid;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+  padding-left: 5px;
+  padding-right: 5px;
+  vertical-align: top;
+}
+
+#oriwkpcaxh .gt_row_group_first td {
+  border-top-width: 2px;
+}
+
+#oriwkpcaxh .gt_row_group_first th {
+  border-top-width: 2px;
+}
+
+#oriwkpcaxh .gt_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oriwkpcaxh .gt_first_summary_row {
+  border-top-style: solid;
+  border-top-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_first_summary_row.thick {
+  border-top-width: 2px;
+}
+
+#oriwkpcaxh .gt_last_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_grand_summary_row {
+  color: #333333;
+  background-color: #FFFFFF;
+  text-transform: inherit;
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oriwkpcaxh .gt_first_grand_summary_row {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-top-style: double;
+  border-top-width: 6px;
+  border-top-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_last_grand_summary_row_top {
+  padding-top: 8px;
+  padding-bottom: 8px;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-bottom-style: double;
+  border-bottom-width: 6px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_striped {
+  background-color: rgba(128, 128, 128, 0.05);
+}
+
+#oriwkpcaxh .gt_table_body {
+  border-top-style: solid;
+  border-top-width: 2px;
+  border-top-color: #D3D3D3;
+  border-bottom-style: solid;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_footnotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_footnote {
+  margin: 0px;
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oriwkpcaxh .gt_sourcenotes {
+  color: #333333;
+  background-color: #FFFFFF;
+  border-bottom-style: none;
+  border-bottom-width: 2px;
+  border-bottom-color: #D3D3D3;
+  border-left-style: none;
+  border-left-width: 2px;
+  border-left-color: #D3D3D3;
+  border-right-style: none;
+  border-right-width: 2px;
+  border-right-color: #D3D3D3;
+}
+
+#oriwkpcaxh .gt_sourcenote {
+  font-size: 90%;
+  padding-top: 4px;
+  padding-bottom: 4px;
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+#oriwkpcaxh .gt_left {
+  text-align: left;
+}
+
+#oriwkpcaxh .gt_center {
+  text-align: center;
+}
+
+#oriwkpcaxh .gt_right {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+#oriwkpcaxh .gt_font_normal {
+  font-weight: normal;
+}
+
+#oriwkpcaxh .gt_font_bold {
+  font-weight: bold;
+}
+
+#oriwkpcaxh .gt_font_italic {
+  font-style: italic;
+}
+
+#oriwkpcaxh .gt_super {
+  font-size: 65%;
+}
+
+#oriwkpcaxh .gt_footnote_marks {
+  font-size: 75%;
+  vertical-align: 0.4em;
+  position: initial;
+}
+
+#oriwkpcaxh .gt_asterisk {
+  font-size: 100%;
+  vertical-align: 0;
+}
+
+#oriwkpcaxh .gt_indent_1 {
+  text-indent: 5px;
+}
+
+#oriwkpcaxh .gt_indent_2 {
+  text-indent: 10px;
+}
+
+#oriwkpcaxh .gt_indent_3 {
+  text-indent: 15px;
+}
+
+#oriwkpcaxh .gt_indent_4 {
+  text-indent: 20px;
+}
+
+#oriwkpcaxh .gt_indent_5 {
+  text-indent: 25px;
+}
+
+#oriwkpcaxh .katex-display {
+  display: inline-flex !important;
+  margin-bottom: 0.75em !important;
+}
+
+#oriwkpcaxh div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+  height: 0px !important;
+}
+</style>
+
+<table class="gt_table do-not-create-environment cell caption-top table table-sm table-striped small" data-quarto-postprocess="true" data-quarto-disable-processing="false" data-quarto-bootstrap="false">
+<thead>
+<tr class="gt_col_headings header">
+<th id="entity" class="gt_col_heading gt_columns_bottom_border gt_left" data-quarto-table-cell-role="th" scope="col">entity</th>
+<th id="Start" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Start</th>
+<th id="End" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">End</th>
+<th id="Nb-Year" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Nb Year</th>
+<th id="Total-generation-[TWh]" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Total generation [TWh]</th>
+<th id="Avg-generation-[TWh]" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg generation [TWh]</th>
+<th id="Min-generation-[TWh]" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Min generation [TWh]</th>
+<th id="Max-generation-[TWh]" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Max generation [TWh]</th>
+<th id="Avg-annual-growth" class="gt_col_heading gt_columns_bottom_border gt_right" data-quarto-table-cell-role="th" scope="col">Avg annual growth</th>
+</tr>
+</thead>
+<tbody class="gt_table_body">
+<tr class="odd">
+<td class="gt_row gt_left" headers="entity">China</td>
+<td class="gt_row gt_right" headers="Start">1985</td>
+<td class="gt_row gt_right" headers="End">2024</td>
+<td class="gt_row gt_right" headers="Nb Year">40</td>
+<td class="gt_row gt_right" headers="Total generation [TWh]">139,418.6</td>
+<td class="gt_row gt_right" headers="Avg generation [TWh]">3,485.5</td>
+<td class="gt_row gt_right" headers="Min generation [TWh]">410.7</td>
+<td class="gt_row gt_right" headers="Max generation [TWh]">10,072.6</td>
+<td class="gt_row gt_right" headers="Avg annual growth">8.55%</td>
+</tr>
+<tr class="even">
+<td class="gt_row gt_left" headers="entity">United States</td>
+<td class="gt_row gt_right" headers="Start">1985</td>
+<td class="gt_row gt_right" headers="End">2024</td>
+<td class="gt_row gt_right" headers="Nb Year">40</td>
+<td class="gt_row gt_right" headers="Total generation [TWh]">151,135.9</td>
+<td class="gt_row gt_right" headers="Avg generation [TWh]">3,778.4</td>
+<td class="gt_row gt_right" headers="Min generation [TWh]">2,657.2</td>
+<td class="gt_row gt_right" headers="Max generation [TWh]">4,387.3</td>
+<td class="gt_row gt_right" headers="Avg annual growth">1.29%</td>
+</tr>
+</tbody>
+</table>
+
+</div>
+</div>
+</div>
+</figure>
+</div>
+</div>
+</section>
 </section>
 <section id="conclusions" class="level1">
 <h1>Conclusions</h1>
+<p>This project provide a glimpse to undertand the energy generation trend around the globe. The analysis is conducted on 215 countries and yield the following result:</p>
+<ol type="1">
+<li><p>China is leading the energy generation race globally, along with many of the developping countries such as Benin and Palestine.</p></li>
+<li><p>India also showing a wake up trend.</p></li>
+<li><p>With the current trend, China generation capacity will surpass the USA, as it has done for Japan, Russia, and other developed countries.</p></li>
+</ol>
 <section id="summary-of-findings" class="level2">
 <h2 class="anchored" data-anchor-id="summary-of-findings">Summary of Findings</h2>
-<section id="questions-and-next-steps" class="level3">
-<h3 class="anchored" data-anchor-id="questions-and-next-steps">Questions and Next Steps</h3>
+<section id="questions-and-next-steps" class="level3 unnumbered">
+
+
 </section>
 </section>
 </section>
 
-</main>
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Questions and Next Steps</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="ref-ourworldindata2025electricity" class="csl-entry" role="listitem">
+Data, O. W. in. (2025). Electricity generation. <a href="https://ourworldindata.org/grapher/electricity-generation" class="uri">https://ourworldindata.org/grapher/electricity-generation</a>.
+</div>
+</div></section></div></main>
 <!-- /main column -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
