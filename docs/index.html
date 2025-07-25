@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="Eric Bidong Wakunga">
-<meta name="dcterms.date" content="2025-07-22">
+<meta name="dcterms.date" content="2025-07-25">
 
 <title>Electricity generation by countries</title>
 <style>
@@ -127,7 +127,7 @@ div.csl-indent {
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">July 22, 2025</p>
+      <p class="date">July 25, 2025</p>
     </div>
   </div>
   
@@ -145,6 +145,7 @@ div.csl-indent {
 </section>
 <section id="methods" class="level1">
 <h1>Methods</h1>
+<p>The electricity generation dataset was compiled by <em>Our World in Data</em> based on original sources from Ember and the Energy Institute’s <em>Statistical Review of World Energy (2025)</em>. It includes major post-processing by Our World in Data to standardize and harmonize national statistics. The dataset covers total electricity generated per country annually, measured in terawatt-hours, over the period 1985 to 2024. It was last updated in June 2025 and is intended to support global energy analysis and policy research.</p>
 <section id="loading-libraries" class="level2">
 <h2 class="anchored" data-anchor-id="loading-libraries"><strong>Loading libraries</strong></h2>
 <div class="cell">
@@ -352,17 +353,26 @@ div.csl-indent {
 <h1>Results</h1>
 <section id="time-coverage-in-data-by-each-country" class="level2">
 <h2 class="anchored" data-anchor-id="time-coverage-in-data-by-each-country">Time coverage in data by each country</h2>
-<p>We want to check for what periode of time there is electrical generation data for each country before performing other EDA.</p>
+<p>We want to check for what period of time there is electrical generation data for each country before performing other EDA.</p>
 <div class="cell">
-<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a>energy_summary_grouped <span class="ot">&lt;-</span> energy_summary <span class="sc">|&gt;</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">time_range =</span> <span class="fu">paste</span>(min_year, max_year, <span class="at">sep=</span><span class="st">'-'</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new label column showing "start–end" range</span></span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>energy_summary_labeled <span class="ot">&lt;-</span> energy_summary <span class="sc">%&gt;%</span></span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">range_label =</span> <span class="fu">paste</span>(min_year, max_year, <span class="at">sep =</span> <span class="st">"–"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a new label column showing "start–end" range</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>energy_summary_labeled <span class="ot">&lt;-</span> energy_summary <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">range_label =</span> <span class="fu">paste</span>(min_year, max_year, <span class="at">sep =</span> <span class="st">"–"</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <div class="cell" alt="Bar plot with year spans representing the availability of data.">
+<div class="sourceCode cell-code" id="cb18"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(energy_summary_labeled, <span class="fu">aes</span>(<span class="at">y =</span> <span class="fu">reorder</span>(range_label, min_year),  </span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">x =</span> min_year,</span>
+<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>                                   <span class="at">xend =</span> max_year)) <span class="sc">+</span></span>
+<span id="cb18-4"><a href="#cb18-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_segment</span>(<span class="fu">aes</span>(<span class="at">xend =</span> max_year, <span class="at">yend =</span> range_label),</span>
+<span id="cb18-5"><a href="#cb18-5" aria-hidden="true" tabindex="-1"></a>               <span class="at">size =</span> <span class="dv">2</span>, <span class="at">color =</span> <span class="st">"darkgreen"</span>) <span class="sc">+</span></span>
+<span id="cb18-6"><a href="#cb18-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb18-7"><a href="#cb18-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Electricity Generation Data Time Span"</span>,</span>
+<span id="cb18-8"><a href="#cb18-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb18-9"><a href="#cb18-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Time Range (Start–End Year)"</span></span>
+<span id="cb18-10"><a href="#cb18-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb18-11"><a href="#cb18-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_x_continuous</span>(<span class="at">breaks =</span> <span class="fu">seq</span>(<span class="dv">1985</span>,<span class="dv">2024</span>, <span class="at">by=</span><span class="dv">2</span>), <span class="at">limits =</span> <span class="fu">c</span>(<span class="dv">1985</span>,<span class="dv">2024</span>))<span class="sc">+</span></span>
+<span id="cb18-12"><a href="#cb18-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb18-13"><a href="#cb18-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">axis.text.x =</span> <span class="fu">element_text</span>(<span class="at">angle =</span> <span class="dv">45</span>, <span class="at">hjust =</span> <span class="dv">1</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-electricity-eneration-data-time-span" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -376,12 +386,26 @@ Figure&nbsp;1: Electricity Generation Data Time Span.
 </div>
 </div>
 </div>
-<p>Not all the countries have data for the last 39 years. the <a href="#fig-electricity-eneration-data-time-span" class="quarto-xref">Figure&nbsp;1</a> graph provides the span for each category. This will help to better understand trend later in our analysis.</p>
+<p>Not all the countries have data for the 39-year period. the <a href="#fig-electricity-eneration-data-time-span" class="quarto-xref">Figure&nbsp;1</a> graph provides the span for each category. This will help to better understand trend later in our analysis.</p>
 </section>
 <section id="average-annual-growth-vs-total-generation" class="level2">
 <h2 class="anchored" data-anchor-id="average-annual-growth-vs-total-generation">Average annual growth vs total generation</h2>
 <p>Let’s look at the relationship between electricity generation growth vs total generation.</p>
 <div class="cell" alt="Scatter plot with labeled bubbles showing countries’ total electricity generation and growth rate. Labels avoid overlap using leader lines.">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co">#Create a variable called growth_percent that converts annual growt in % format</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>energy_annotated <span class="ot">&lt;-</span> energy_summary <span class="sc">%&gt;%</span></span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">growth_percent =</span> avg_annual_growth <span class="sc">*</span> <span class="dv">100</span>)  <span class="co"># Convert to percent</span></span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(energy_annotated, <span class="fu">aes</span>(<span class="at">x =</span> total_generation_TWh, <span class="at">y =</span> growth_percent)) <span class="sc">+</span></span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">color =</span> <span class="st">"darkorange"</span>, <span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span>                      <span class="co"># Bubbles</span></span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>, <span class="at">color =</span> <span class="st">"gray40"</span>, <span class="at">linetype =</span> <span class="st">"dashed"</span>) <span class="sc">+</span>  <span class="co"># Trendline</span></span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_text_repel</span>(<span class="fu">aes</span>(<span class="at">label =</span> Entity), <span class="at">size =</span> <span class="dv">3</span>, <span class="at">max.overlaps =</span> <span class="dv">100</span>) <span class="sc">+</span>          <span class="co"># Non-overlapping country labels</span></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb19-10"><a href="#cb19-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Electricity Generation vs Growth Rate (with Country Labels)"</span>,</span>
+<span id="cb19-11"><a href="#cb19-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Total Generation (TWh)"</span>,</span>
+<span id="cb19-12"><a href="#cb19-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Average Annual Growth Rate (%)"</span></span>
+<span id="cb19-13"><a href="#cb19-13" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb19-14"><a href="#cb19-14" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-growth-vs-total-annotated" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -398,6 +422,34 @@ Figure&nbsp;2: Electricity generation vs growth rate.
 <p>From this <a href="#fig-growth-vs-total-annotated" class="quarto-xref">Figure&nbsp;2</a>, it turns out that industrialized countries such USA, China, Japon, India, South Corea have low growth rate compared to developing countries. China generation capacity is growing faster that USA, yet they generation capacity is close to each other. Palestine has the biggest growth rate, though it generation still is low.</p>
 <p>Let’s group countries by low midium, high and very high growth rate in the <a href="#tbl-growth-class-list" class="quarto-xref">Table&nbsp;1</a></p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb20"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Classify growth and assign sorting order</span></span>
+<span id="cb20-2"><a href="#cb20-2" aria-hidden="true" tabindex="-1"></a>classified_growth <span class="ot">&lt;-</span> energy_summary <span class="sc">%&gt;%</span></span>
+<span id="cb20-3"><a href="#cb20-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb20-4"><a href="#cb20-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">growth_class =</span> <span class="fu">case_when</span>(</span>
+<span id="cb20-5"><a href="#cb20-5" aria-hidden="true" tabindex="-1"></a>      avg_annual_growth <span class="sc">&lt;=</span> <span class="fl">0.02</span> <span class="sc">~</span> <span class="st">"Low (≤ 2%)"</span>,</span>
+<span id="cb20-6"><a href="#cb20-6" aria-hidden="true" tabindex="-1"></a>      avg_annual_growth <span class="sc">&lt;=</span> <span class="fl">0.10</span> <span class="sc">~</span> <span class="st">"Medium (&gt;2% – ≤10%)"</span>,</span>
+<span id="cb20-7"><a href="#cb20-7" aria-hidden="true" tabindex="-1"></a>      avg_annual_growth <span class="sc">&lt;=</span> <span class="fl">0.15</span> <span class="sc">~</span> <span class="st">"High (&gt;10% – ≤15%)"</span>,</span>
+<span id="cb20-8"><a href="#cb20-8" aria-hidden="true" tabindex="-1"></a>      avg_annual_growth <span class="sc">&gt;</span>  <span class="fl">0.15</span> <span class="sc">~</span> <span class="st">"Very High (&gt; 15%)"</span></span>
+<span id="cb20-9"><a href="#cb20-9" aria-hidden="true" tabindex="-1"></a>    ),</span>
+<span id="cb20-10"><a href="#cb20-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">class_order =</span> <span class="fu">case_when</span>(</span>
+<span id="cb20-11"><a href="#cb20-11" aria-hidden="true" tabindex="-1"></a>      growth_class <span class="sc">==</span> <span class="st">"Low (≤ 2%)"</span> <span class="sc">~</span> <span class="dv">4</span>,</span>
+<span id="cb20-12"><a href="#cb20-12" aria-hidden="true" tabindex="-1"></a>      growth_class <span class="sc">==</span> <span class="st">"Medium (&gt;2% – ≤10%)"</span> <span class="sc">~</span> <span class="dv">3</span>,</span>
+<span id="cb20-13"><a href="#cb20-13" aria-hidden="true" tabindex="-1"></a>      growth_class <span class="sc">==</span> <span class="st">"High (&gt;10% – ≤15%)"</span> <span class="sc">~</span> <span class="dv">2</span>,</span>
+<span id="cb20-14"><a href="#cb20-14" aria-hidden="true" tabindex="-1"></a>      growth_class <span class="sc">==</span> <span class="st">"Very High (&gt; 15%)"</span> <span class="sc">~</span> <span class="dv">1</span></span>
+<span id="cb20-15"><a href="#cb20-15" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb20-16"><a href="#cb20-16" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb20-17"><a href="#cb20-17" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-18"><a href="#cb20-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Group and list countries per class</span></span>
+<span id="cb20-19"><a href="#cb20-19" aria-hidden="true" tabindex="-1"></a>growth_summary <span class="ot">&lt;-</span> classified_growth <span class="sc">%&gt;%</span></span>
+<span id="cb20-20"><a href="#cb20-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(growth_class, class_order) <span class="sc">%&gt;%</span></span>
+<span id="cb20-21"><a href="#cb20-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="st">`</span><span class="at">List of Countries</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">paste</span>(<span class="fu">sort</span>(Entity), <span class="at">collapse =</span> <span class="st">", "</span>), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-22"><a href="#cb20-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(class_order) <span class="sc">%&gt;%</span></span>
+<span id="cb20-23"><a href="#cb20-23" aria-hidden="true" tabindex="-1"></a>  <span class="fu">select</span>(<span class="st">`</span><span class="at">Growth Category</span><span class="st">`</span> <span class="ot">=</span> growth_class, <span class="st">`</span><span class="at">List of Countries</span><span class="st">`</span>)</span>
+<span id="cb20-24"><a href="#cb20-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb20-25"><a href="#cb20-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Render the table</span></span>
+<span id="cb20-26"><a href="#cb20-26" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(growth_summary) <span class="sc">%&gt;%</span></span>
+<span id="cb20-27"><a href="#cb20-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">tab_header</span>(<span class="at">title =</span> <span class="st">"Countries by Growth Rate Category"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb20-28"><a href="#cb20-28" aria-hidden="true" tabindex="-1"></a>  <span class="fu">cols_width</span>(<span class="st">`</span><span class="at">List of Countries</span><span class="st">`</span> <span class="sc">~</span> <span class="fu">px</span>(<span class="dv">600</span>))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-growth-class-list" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-growth-class-list-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -405,23 +457,23 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
 </figcaption>
 <div aria-describedby="tbl-growth-class-list-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="wbimfaekvy" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#wbimfaekvy table {
+<div id="fplzlghhzo" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#fplzlghhzo table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#wbimfaekvy thead, #wbimfaekvy tbody, #wbimfaekvy tfoot, #wbimfaekvy tr, #wbimfaekvy td, #wbimfaekvy th {
+#fplzlghhzo thead, #fplzlghhzo tbody, #fplzlghhzo tfoot, #fplzlghhzo tr, #fplzlghhzo td, #fplzlghhzo th {
   border-style: none;
 }
 
-#wbimfaekvy p {
+#fplzlghhzo p {
   margin: 0;
   padding: 0;
 }
 
-#wbimfaekvy .gt_table {
+#fplzlghhzo .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -447,12 +499,12 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-left-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_caption {
+#fplzlghhzo .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#wbimfaekvy .gt_title {
+#fplzlghhzo .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -464,7 +516,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-bottom-width: 0;
 }
 
-#wbimfaekvy .gt_subtitle {
+#fplzlghhzo .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -476,7 +528,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-top-width: 0;
 }
 
-#wbimfaekvy .gt_heading {
+#fplzlghhzo .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -488,13 +540,13 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-right-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_bottom_border {
+#fplzlghhzo .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_col_headings {
+#fplzlghhzo .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -509,7 +561,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-right-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_col_heading {
+#fplzlghhzo .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -529,7 +581,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   overflow-x: hidden;
 }
 
-#wbimfaekvy .gt_column_spanner_outer {
+#fplzlghhzo .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -541,15 +593,15 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   padding-right: 4px;
 }
 
-#wbimfaekvy .gt_column_spanner_outer:first-child {
+#fplzlghhzo .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#wbimfaekvy .gt_column_spanner_outer:last-child {
+#fplzlghhzo .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#wbimfaekvy .gt_column_spanner {
+#fplzlghhzo .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -561,11 +613,11 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   width: 100%;
 }
 
-#wbimfaekvy .gt_spanner_row {
+#fplzlghhzo .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#wbimfaekvy .gt_group_heading {
+#fplzlghhzo .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -591,7 +643,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   text-align: left;
 }
 
-#wbimfaekvy .gt_empty_group_heading {
+#fplzlghhzo .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -606,15 +658,15 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   vertical-align: middle;
 }
 
-#wbimfaekvy .gt_from_md > :first-child {
+#fplzlghhzo .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#wbimfaekvy .gt_from_md > :last-child {
+#fplzlghhzo .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#wbimfaekvy .gt_row {
+#fplzlghhzo .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -633,7 +685,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   overflow-x: hidden;
 }
 
-#wbimfaekvy .gt_stub {
+#fplzlghhzo .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -646,7 +698,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   padding-right: 5px;
 }
 
-#wbimfaekvy .gt_stub_row_group {
+#fplzlghhzo .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -660,15 +712,15 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   vertical-align: top;
 }
 
-#wbimfaekvy .gt_row_group_first td {
+#fplzlghhzo .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#wbimfaekvy .gt_row_group_first th {
+#fplzlghhzo .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#wbimfaekvy .gt_summary_row {
+#fplzlghhzo .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -678,16 +730,16 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   padding-right: 5px;
 }
 
-#wbimfaekvy .gt_first_summary_row {
+#fplzlghhzo .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_first_summary_row.thick {
+#fplzlghhzo .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#wbimfaekvy .gt_last_summary_row {
+#fplzlghhzo .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -697,7 +749,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-bottom-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_grand_summary_row {
+#fplzlghhzo .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -707,7 +759,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   padding-right: 5px;
 }
 
-#wbimfaekvy .gt_first_grand_summary_row {
+#fplzlghhzo .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -717,7 +769,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-top-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_last_grand_summary_row_top {
+#fplzlghhzo .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -727,11 +779,11 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-bottom-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_striped {
+#fplzlghhzo .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#wbimfaekvy .gt_table_body {
+#fplzlghhzo .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -740,7 +792,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-bottom-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_footnotes {
+#fplzlghhzo .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -754,7 +806,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-right-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_footnote {
+#fplzlghhzo .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -763,7 +815,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   padding-right: 5px;
 }
 
-#wbimfaekvy .gt_sourcenotes {
+#fplzlghhzo .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -777,7 +829,7 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   border-right-color: #D3D3D3;
 }
 
-#wbimfaekvy .gt_sourcenote {
+#fplzlghhzo .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -785,72 +837,72 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
   padding-right: 5px;
 }
 
-#wbimfaekvy .gt_left {
+#fplzlghhzo .gt_left {
   text-align: left;
 }
 
-#wbimfaekvy .gt_center {
+#fplzlghhzo .gt_center {
   text-align: center;
 }
 
-#wbimfaekvy .gt_right {
+#fplzlghhzo .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#wbimfaekvy .gt_font_normal {
+#fplzlghhzo .gt_font_normal {
   font-weight: normal;
 }
 
-#wbimfaekvy .gt_font_bold {
+#fplzlghhzo .gt_font_bold {
   font-weight: bold;
 }
 
-#wbimfaekvy .gt_font_italic {
+#fplzlghhzo .gt_font_italic {
   font-style: italic;
 }
 
-#wbimfaekvy .gt_super {
+#fplzlghhzo .gt_super {
   font-size: 65%;
 }
 
-#wbimfaekvy .gt_footnote_marks {
+#fplzlghhzo .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#wbimfaekvy .gt_asterisk {
+#fplzlghhzo .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#wbimfaekvy .gt_indent_1 {
+#fplzlghhzo .gt_indent_1 {
   text-indent: 5px;
 }
 
-#wbimfaekvy .gt_indent_2 {
+#fplzlghhzo .gt_indent_2 {
   text-indent: 10px;
 }
 
-#wbimfaekvy .gt_indent_3 {
+#fplzlghhzo .gt_indent_3 {
   text-indent: 15px;
 }
 
-#wbimfaekvy .gt_indent_4 {
+#fplzlghhzo .gt_indent_4 {
   text-indent: 20px;
 }
 
-#wbimfaekvy .gt_indent_5 {
+#fplzlghhzo .gt_indent_5 {
   text-indent: 25px;
 }
 
-#wbimfaekvy .katex-display {
+#fplzlghhzo .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#wbimfaekvy div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#fplzlghhzo div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -900,6 +952,37 @@ Table&nbsp;1: Grouping of countries by average annual electricity generation gro
 <h2 class="anchored" data-anchor-id="generation-trend">Generation trend</h2>
 <p>Let’s look at the historical trend and see who which countries are showing positive pace.</p>
 <div class="cell" alt="line plot representing trend in the electricity generation.">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 1: Identify top 15 countries by total generation</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>top_15 <span class="ot">&lt;-</span> energy_summary <span class="sc">|&gt;</span></span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(total_generation_TWh)) <span class="sc">|&gt;</span></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">slice</span>(<span class="dv">1</span><span class="sc">:</span><span class="dv">15</span>) <span class="sc">|&gt;</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pull</span>(Entity)</span>
+<span id="cb21-6"><a href="#cb21-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-7"><a href="#cb21-7" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 2: Add color flag to the full dataset</span></span>
+<span id="cb21-8"><a href="#cb21-8" aria-hidden="true" tabindex="-1"></a>energy_trend_labeled <span class="ot">&lt;-</span> energy_generation_by_countries <span class="sc">|&gt;</span></span>
+<span id="cb21-9"><a href="#cb21-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">rename</span>(<span class="at">generation_TWh =</span> electricity_generation_twh) <span class="sc">|&gt;</span></span>
+<span id="cb21-10"><a href="#cb21-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">highlight =</span> <span class="fu">ifelse</span>(entity <span class="sc">%in%</span> top_15, entity, <span class="st">"Other"</span>))</span>
+<span id="cb21-11"><a href="#cb21-11" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-12"><a href="#cb21-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 3: Define distinct color palette for top 15 + gray for others</span></span>
+<span id="cb21-13"><a href="#cb21-13" aria-hidden="true" tabindex="-1"></a>top_colors <span class="ot">&lt;-</span> <span class="fu">setNames</span>(<span class="fu">c</span>(<span class="fu">brewer.pal</span>(<span class="dv">12</span>, <span class="st">"Set3"</span>), <span class="fu">brewer.pal</span>(<span class="dv">3</span>, <span class="st">"Dark2"</span>)), top_15)</span>
+<span id="cb21-14"><a href="#cb21-14" aria-hidden="true" tabindex="-1"></a>all_colors <span class="ot">&lt;-</span> <span class="fu">c</span>(<span class="st">"Other"</span> <span class="ot">=</span> <span class="st">"gray80"</span>, top_colors)</span>
+<span id="cb21-15"><a href="#cb21-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-16"><a href="#cb21-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Step 4: Plot</span></span>
+<span id="cb21-17"><a href="#cb21-17" aria-hidden="true" tabindex="-1"></a><span class="fu">ggplot</span>(energy_trend_labeled, <span class="fu">aes</span>(<span class="at">x =</span> year, <span class="at">y =</span> generation_TWh, <span class="at">group =</span> entity, <span class="at">color =</span> highlight)) <span class="sc">+</span></span>
+<span id="cb21-18"><a href="#cb21-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_line</span>(<span class="at">alpha =</span> <span class="fl">0.8</span>, <span class="at">linewidth =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb21-19"><a href="#cb21-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_manual</span>(</span>
+<span id="cb21-20"><a href="#cb21-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">values =</span> all_colors,</span>
+<span id="cb21-21"><a href="#cb21-21" aria-hidden="true" tabindex="-1"></a>    <span class="at">breaks =</span> top_15,                     <span class="co"># legend will only show the top 15</span></span>
+<span id="cb21-22"><a href="#cb21-22" aria-hidden="true" tabindex="-1"></a>    <span class="at">guide =</span> <span class="fu">guide_legend</span>(<span class="at">override.aes =</span> <span class="fu">list</span>(<span class="at">linewidth =</span> <span class="fl">1.5</span>))</span>
+<span id="cb21-23"><a href="#cb21-23" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-24"><a href="#cb21-24" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb21-25"><a href="#cb21-25" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Electricity Generation Trend by Country"</span>,</span>
+<span id="cb21-26"><a href="#cb21-26" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Year"</span>,</span>
+<span id="cb21-27"><a href="#cb21-27" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Electricity Generation (TWh)"</span>,</span>
+<span id="cb21-28"><a href="#cb21-28" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Top 15 Countries"</span></span>
+<span id="cb21-29"><a href="#cb21-29" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb21-30"><a href="#cb21-30" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb21-31"><a href="#cb21-31" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme</span>(<span class="at">legend.position =</span> <span class="st">"right"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output-display">
 <div id="fig-electricity-eneration-trend" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -919,6 +1002,23 @@ Figure&nbsp;3: Electricity Generation trend for each countries
 <h2 class="anchored" data-anchor-id="summary-statistics-of-china">Summary statistics of China</h2>
 <p>As the chart above has depicted Chine and USA, let see what their summary statistics are in the table <a href="#tbl-china-usa-summary" class="quarto-xref">Table&nbsp;2</a> below.</p>
 <div class="cell">
+<div class="sourceCode cell-code" id="cb22"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter for China and USA</span></span>
+<span id="cb22-2"><a href="#cb22-2" aria-hidden="true" tabindex="-1"></a>china_usa_summary <span class="ot">&lt;-</span> energy_generation_by_countries <span class="sc">%&gt;%</span></span>
+<span id="cb22-3"><a href="#cb22-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(entity <span class="sc">%in%</span> <span class="fu">c</span>(<span class="st">"China"</span>, <span class="st">"United States"</span>)) <span class="sc">%&gt;%</span></span>
+<span id="cb22-4"><a href="#cb22-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(entity) <span class="sc">%&gt;%</span></span>
+<span id="cb22-5"><a href="#cb22-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb22-6"><a href="#cb22-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">Start =</span> <span class="fu">min</span>(year, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-7"><a href="#cb22-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">End =</span> <span class="fu">max</span>(year, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-8"><a href="#cb22-8" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Nb Year</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">n</span>(),</span>
+<span id="cb22-9"><a href="#cb22-9" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Total generation [TWh]</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">sum</span>(<span class="st">`</span><span class="at">electricity_generation_twh</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-10"><a href="#cb22-10" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Avg generation [TWh]</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">mean</span>(<span class="st">`</span><span class="at">electricity_generation_twh</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-11"><a href="#cb22-11" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Min generation [TWh]</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">min</span>(<span class="st">`</span><span class="at">electricity_generation_twh</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-12"><a href="#cb22-12" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Max generation [TWh]</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">max</span>(<span class="st">`</span><span class="at">electricity_generation_twh</span><span class="st">`</span>, <span class="at">na.rm =</span> <span class="cn">TRUE</span>),</span>
+<span id="cb22-13"><a href="#cb22-13" aria-hidden="true" tabindex="-1"></a>    <span class="st">`</span><span class="at">Avg annual growth</span><span class="st">`</span> <span class="ot">=</span> (<span class="fu">last</span>(<span class="st">`</span><span class="at">electricity_generation_twh</span><span class="st">`</span>) <span class="sc">/</span> <span class="fu">first</span>(<span class="st">`</span><span class="at">electricity_generation_twh</span><span class="st">`</span>))<span class="sc">^</span>(<span class="dv">1</span><span class="sc">/</span>(<span class="st">`</span><span class="at">Nb Year</span><span class="st">`</span> <span class="sc">-</span> <span class="dv">1</span>)) <span class="sc">-</span> <span class="dv">1</span>)</span>
+<span id="cb22-14"><a href="#cb22-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb22-15"><a href="#cb22-15" aria-hidden="true" tabindex="-1"></a><span class="fu">gt</span>(china_usa_summary) <span class="sc">%&gt;%</span></span>
+<span id="cb22-16"><a href="#cb22-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_percent</span>(<span class="at">columns =</span> <span class="st">`</span><span class="at">Avg annual growth</span><span class="st">`</span>, <span class="at">decimals =</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb22-17"><a href="#cb22-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">fmt_number</span>(<span class="at">columns =</span> <span class="fu">matches</span>(<span class="st">"Generation"</span>), <span class="at">decimals =</span> <span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div id="tbl-china-usa-summary" class="cell quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-tbl figure">
 <figcaption class="quarto-float-caption-top quarto-float-caption quarto-float-tbl" id="tbl-china-usa-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
@@ -926,23 +1026,23 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
 </figcaption>
 <div aria-describedby="tbl-china-usa-summary-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <div class="cell-output-display">
-<div id="oriwkpcaxh" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
-<style>#oriwkpcaxh table {
+<div id="jomcbhydkp" style="padding-left:0px;padding-right:0px;padding-top:10px;padding-bottom:10px;overflow-x:auto;overflow-y:auto;width:auto;height:auto;">
+<style>#jomcbhydkp table {
   font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-#oriwkpcaxh thead, #oriwkpcaxh tbody, #oriwkpcaxh tfoot, #oriwkpcaxh tr, #oriwkpcaxh td, #oriwkpcaxh th {
+#jomcbhydkp thead, #jomcbhydkp tbody, #jomcbhydkp tfoot, #jomcbhydkp tr, #jomcbhydkp td, #jomcbhydkp th {
   border-style: none;
 }
 
-#oriwkpcaxh p {
+#jomcbhydkp p {
   margin: 0;
   padding: 0;
 }
 
-#oriwkpcaxh .gt_table {
+#jomcbhydkp .gt_table {
   display: table;
   border-collapse: collapse;
   line-height: normal;
@@ -968,12 +1068,12 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-left-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_caption {
+#jomcbhydkp .gt_caption {
   padding-top: 4px;
   padding-bottom: 4px;
 }
 
-#oriwkpcaxh .gt_title {
+#jomcbhydkp .gt_title {
   color: #333333;
   font-size: 125%;
   font-weight: initial;
@@ -985,7 +1085,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-bottom-width: 0;
 }
 
-#oriwkpcaxh .gt_subtitle {
+#jomcbhydkp .gt_subtitle {
   color: #333333;
   font-size: 85%;
   font-weight: initial;
@@ -997,7 +1097,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-top-width: 0;
 }
 
-#oriwkpcaxh .gt_heading {
+#jomcbhydkp .gt_heading {
   background-color: #FFFFFF;
   text-align: center;
   border-bottom-color: #FFFFFF;
@@ -1009,13 +1109,13 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-right-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_bottom_border {
+#jomcbhydkp .gt_bottom_border {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_col_headings {
+#jomcbhydkp .gt_col_headings {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1030,7 +1130,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-right-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_col_heading {
+#jomcbhydkp .gt_col_heading {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1050,7 +1150,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   overflow-x: hidden;
 }
 
-#oriwkpcaxh .gt_column_spanner_outer {
+#jomcbhydkp .gt_column_spanner_outer {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1062,15 +1162,15 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   padding-right: 4px;
 }
 
-#oriwkpcaxh .gt_column_spanner_outer:first-child {
+#jomcbhydkp .gt_column_spanner_outer:first-child {
   padding-left: 0;
 }
 
-#oriwkpcaxh .gt_column_spanner_outer:last-child {
+#jomcbhydkp .gt_column_spanner_outer:last-child {
   padding-right: 0;
 }
 
-#oriwkpcaxh .gt_column_spanner {
+#jomcbhydkp .gt_column_spanner {
   border-bottom-style: solid;
   border-bottom-width: 2px;
   border-bottom-color: #D3D3D3;
@@ -1082,11 +1182,11 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   width: 100%;
 }
 
-#oriwkpcaxh .gt_spanner_row {
+#jomcbhydkp .gt_spanner_row {
   border-bottom-style: hidden;
 }
 
-#oriwkpcaxh .gt_group_heading {
+#jomcbhydkp .gt_group_heading {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1112,7 +1212,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   text-align: left;
 }
 
-#oriwkpcaxh .gt_empty_group_heading {
+#jomcbhydkp .gt_empty_group_heading {
   padding: 0.5px;
   color: #333333;
   background-color: #FFFFFF;
@@ -1127,15 +1227,15 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   vertical-align: middle;
 }
 
-#oriwkpcaxh .gt_from_md > :first-child {
+#jomcbhydkp .gt_from_md > :first-child {
   margin-top: 0;
 }
 
-#oriwkpcaxh .gt_from_md > :last-child {
+#jomcbhydkp .gt_from_md > :last-child {
   margin-bottom: 0;
 }
 
-#oriwkpcaxh .gt_row {
+#jomcbhydkp .gt_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1154,7 +1254,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   overflow-x: hidden;
 }
 
-#oriwkpcaxh .gt_stub {
+#jomcbhydkp .gt_stub {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1167,7 +1267,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   padding-right: 5px;
 }
 
-#oriwkpcaxh .gt_stub_row_group {
+#jomcbhydkp .gt_stub_row_group {
   color: #333333;
   background-color: #FFFFFF;
   font-size: 100%;
@@ -1181,15 +1281,15 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   vertical-align: top;
 }
 
-#oriwkpcaxh .gt_row_group_first td {
+#jomcbhydkp .gt_row_group_first td {
   border-top-width: 2px;
 }
 
-#oriwkpcaxh .gt_row_group_first th {
+#jomcbhydkp .gt_row_group_first th {
   border-top-width: 2px;
 }
 
-#oriwkpcaxh .gt_summary_row {
+#jomcbhydkp .gt_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1199,16 +1299,16 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   padding-right: 5px;
 }
 
-#oriwkpcaxh .gt_first_summary_row {
+#jomcbhydkp .gt_first_summary_row {
   border-top-style: solid;
   border-top-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_first_summary_row.thick {
+#jomcbhydkp .gt_first_summary_row.thick {
   border-top-width: 2px;
 }
 
-#oriwkpcaxh .gt_last_summary_row {
+#jomcbhydkp .gt_last_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1218,7 +1318,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-bottom-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_grand_summary_row {
+#jomcbhydkp .gt_grand_summary_row {
   color: #333333;
   background-color: #FFFFFF;
   text-transform: inherit;
@@ -1228,7 +1328,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   padding-right: 5px;
 }
 
-#oriwkpcaxh .gt_first_grand_summary_row {
+#jomcbhydkp .gt_first_grand_summary_row {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1238,7 +1338,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-top-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_last_grand_summary_row_top {
+#jomcbhydkp .gt_last_grand_summary_row_top {
   padding-top: 8px;
   padding-bottom: 8px;
   padding-left: 5px;
@@ -1248,11 +1348,11 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-bottom-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_striped {
+#jomcbhydkp .gt_striped {
   background-color: rgba(128, 128, 128, 0.05);
 }
 
-#oriwkpcaxh .gt_table_body {
+#jomcbhydkp .gt_table_body {
   border-top-style: solid;
   border-top-width: 2px;
   border-top-color: #D3D3D3;
@@ -1261,7 +1361,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-bottom-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_footnotes {
+#jomcbhydkp .gt_footnotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1275,7 +1375,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-right-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_footnote {
+#jomcbhydkp .gt_footnote {
   margin: 0px;
   font-size: 90%;
   padding-top: 4px;
@@ -1284,7 +1384,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   padding-right: 5px;
 }
 
-#oriwkpcaxh .gt_sourcenotes {
+#jomcbhydkp .gt_sourcenotes {
   color: #333333;
   background-color: #FFFFFF;
   border-bottom-style: none;
@@ -1298,7 +1398,7 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   border-right-color: #D3D3D3;
 }
 
-#oriwkpcaxh .gt_sourcenote {
+#jomcbhydkp .gt_sourcenote {
   font-size: 90%;
   padding-top: 4px;
   padding-bottom: 4px;
@@ -1306,72 +1406,72 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
   padding-right: 5px;
 }
 
-#oriwkpcaxh .gt_left {
+#jomcbhydkp .gt_left {
   text-align: left;
 }
 
-#oriwkpcaxh .gt_center {
+#jomcbhydkp .gt_center {
   text-align: center;
 }
 
-#oriwkpcaxh .gt_right {
+#jomcbhydkp .gt_right {
   text-align: right;
   font-variant-numeric: tabular-nums;
 }
 
-#oriwkpcaxh .gt_font_normal {
+#jomcbhydkp .gt_font_normal {
   font-weight: normal;
 }
 
-#oriwkpcaxh .gt_font_bold {
+#jomcbhydkp .gt_font_bold {
   font-weight: bold;
 }
 
-#oriwkpcaxh .gt_font_italic {
+#jomcbhydkp .gt_font_italic {
   font-style: italic;
 }
 
-#oriwkpcaxh .gt_super {
+#jomcbhydkp .gt_super {
   font-size: 65%;
 }
 
-#oriwkpcaxh .gt_footnote_marks {
+#jomcbhydkp .gt_footnote_marks {
   font-size: 75%;
   vertical-align: 0.4em;
   position: initial;
 }
 
-#oriwkpcaxh .gt_asterisk {
+#jomcbhydkp .gt_asterisk {
   font-size: 100%;
   vertical-align: 0;
 }
 
-#oriwkpcaxh .gt_indent_1 {
+#jomcbhydkp .gt_indent_1 {
   text-indent: 5px;
 }
 
-#oriwkpcaxh .gt_indent_2 {
+#jomcbhydkp .gt_indent_2 {
   text-indent: 10px;
 }
 
-#oriwkpcaxh .gt_indent_3 {
+#jomcbhydkp .gt_indent_3 {
   text-indent: 15px;
 }
 
-#oriwkpcaxh .gt_indent_4 {
+#jomcbhydkp .gt_indent_4 {
   text-indent: 20px;
 }
 
-#oriwkpcaxh .gt_indent_5 {
+#jomcbhydkp .gt_indent_5 {
   text-indent: 25px;
 }
 
-#oriwkpcaxh .katex-display {
+#jomcbhydkp .katex-display {
   display: inline-flex !important;
   margin-bottom: 0.75em !important;
 }
 
-#oriwkpcaxh div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
+#jomcbhydkp div.Reactable > div.rt-table > div.rt-thead > div.rt-tr.rt-tr-group-header > div.rt-th-group:after {
   height: 0px !important;
 }
 </style>
@@ -1426,22 +1526,28 @@ Table&nbsp;2: Summary statistics of electricity generation for China and the USA
 </section>
 <section id="conclusions" class="level1">
 <h1>Conclusions</h1>
+<p>The analysis of historical electricity generation data from 1985 to 2024 reveals significant differences in both the scale and growth of energy production across the 215 countries. High-output nations such as China and the United States dominate in total generation, while several smaller economies demonstrate rapid growth path. By classifying countries into growth categories, we can distinguish between mature, expanding, and lagging electricity systems which offers insights for policymakers, investors, and energy planners. The dataset also highlights the uneven availability of historical data, which can affect some types of comparisons. Overall, this dataset provides a valuable foundation for understanding global electricity trends and important strategic decisions toward energy transition and access.</p>
+<section id="summary-of-findings" class="level2">
+<h2 class="anchored" data-anchor-id="summary-of-findings">Summary of Findings</h2>
 <p>This project provide a glimpse to undertand the energy generation trend around the globe. The analysis is conducted on 215 countries and yield the following result:</p>
 <ol type="1">
 <li><p>China is leading the energy generation race globally, along with many of the developping countries such as Benin and Palestine.</p></li>
 <li><p>India also showing a wake up trend.</p></li>
 <li><p>With the current trend, China generation capacity will surpass the USA, as it has done for Japan, Russia, and other developed countries.</p></li>
 </ol>
-<section id="summary-of-findings" class="level2">
-<h2 class="anchored" data-anchor-id="summary-of-findings">Summary of Findings</h2>
-<section id="questions-and-next-steps" class="level3 unnumbered">
-
+<section id="questions-and-next-steps" class="level3">
+<h3 class="anchored" data-anchor-id="questions-and-next-steps">Questions and Next Steps</h3>
+<ol type="1">
+<li>How does electricity generation correlate with development indicators</li>
+<li>Are countries with low or negative growth facing structural challenges?</li>
+<li>What is the role of renewable energy in total generation and growth patterns</li>
+</ol>
 
 </section>
 </section>
 </section>
 
-<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">Questions and Next Steps</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
+<div id="quarto-appendix" class="default"><section class="quarto-appendix-contents" role="doc-bibliography" id="quarto-bibliography"><h2 class="anchored quarto-appendix-heading">References</h2><div id="refs" class="references csl-bib-body hanging-indent" data-entry-spacing="0" data-line-spacing="2" role="list">
 <div id="ref-ourworldindata2025electricity" class="csl-entry" role="listitem">
 Data, O. W. in. (2025). Electricity generation. <a href="https://ourworldindata.org/grapher/electricity-generation" class="uri">https://ourworldindata.org/grapher/electricity-generation</a>.
 </div>

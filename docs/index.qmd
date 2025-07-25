@@ -173,12 +173,7 @@ write_csv(energy_generation_by_countries, here("data/processed/energy_production
 
 ## Time coverage in data by each country
 
-We want to check for what periode of time there is electrical generation data for each country before performing other EDA.
-
-```{r}
-energy_summary_grouped <- energy_summary |>
-  mutate(time_range = paste(min_year, max_year, sep='-'))
-```
+We want to check for what period of time there is electrical generation data for each country before performing other EDA.
 
 ```{r}
 # Create a new label column showing "start–end" range
@@ -206,7 +201,7 @@ ggplot(energy_summary_labeled, aes(y = reorder(range_label, min_year),
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ```
 
-Not all the countries have data for the last 39 years. the @fig-electricity-eneration-data-time-span graph provides the span for each category. This will help to better understand trend later in our analysis.
+Not all the countries have data for the 39-year period. the @fig-electricity-eneration-data-time-span graph provides the span for each category. This will help to better understand trend later in our analysis.
 
 ## Average annual growth vs total generation
 
@@ -217,7 +212,7 @@ Let's look at the relationship between electricity generation growth vs total ge
 #| fig-cap: Electricity generation vs growth rate.
 #| alt: Scatter plot with labeled bubbles showing countries’ total electricity generation and growth rate. Labels avoid overlap using leader lines.
 
-
+#Create a variable called growth_percent that converts annual growt in % format
 energy_annotated <- energy_summary %>%
   mutate(growth_percent = avg_annual_growth * 100)  # Convert to percent
 
